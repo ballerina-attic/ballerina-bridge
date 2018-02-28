@@ -1,9 +1,10 @@
 
 
-Scenario III : Ballerina as a generic Sidecar
+# Ballerina Sidecar
 
-- Wrap non-ballerina code with Ballerina Sidecar and both are deployed in the same pod.
+This samples shows a mock implementation of the Ballerina Sidecar 
 
-- Implement non-ballerina service without outbound network application functions (CB, timeouts) or transactions aware capabilities.
-- All such capabilities are implement at the Ballerina sidecar.
-- Bundle them in the same pod and deploy. 
+- Ballerina Sidecar can be used to enable several capabilities such as transactions, OAuth token validation, observability for non-Ballerina services. 
+- Ballerina Sidecar can be deployed as a container and run alongside the same pod with your non-Ballerina service. 
+- This sample contains a mock implementation of Ballerina Sidecar alongside a Python web app, and deployment descriptors for K8s.
+

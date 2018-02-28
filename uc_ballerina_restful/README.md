@@ -1,22 +1,26 @@
-Scenario I : Ballerina with existing Service Mesh
+# Ballerina with Istio Service Mesh
+
+This example deomstrate how you can run a Ballerina program with Istio service mesh. 
+
+## Prerequisites 
+- Istio Service Mesh ([Setting up Istio](https://istio.io/docs/setup/kubernetes/)).
 
 
 
+##Steps
 
-Pre-req
-- K8s
-- Istio
+Following are the key steps involved in running your Ballerina program with Istio Service Mesh. 
 
-Steps:
+1. Build and push the docker image that contains your Ballerina services.  
+2. Create the deployment descriptor for your 
+3. Manual sidecar injection and deploying to K8s
+   
+   `istioctl kube-inject -f ballerina_restful_svc.yaml -o ballerina_restful_svc_istio_injected.yaml` 
+4. Deploy on K8s. 
 
-1. Build and push Ballerina docker image.
-2. Manual sidecar injection and deploying to K8s
-  - Kube Injection : istioctl kube-inject -f ballerina_restful_svc.yaml -o ballerina_restful_svc_istio_injected.yaml
-  - Deploy on k8s: kubectl apply -f ballerina_restful_svc_istio_injected.yaml or kubectl apply -f <(istioctl kube-inject -f ballerina_restful_svc.yaml)
+   `kubectl apply -f ballerina_restful_svc_istio_injected.yaml` 
+5. Now the Ballerina service is successfully deployed into your Istio service mesh and you can get the Gateway URL 
+as mentioned in [here](https://istio.io/docs/guides/bookinfo.html) and invoke the service using following curl command. 
 
+   `kcurl http://$GATEWAY_URL/ballerina` 
 
-Scenario/Guides
-- Ballerina RESTful service with Istio
-    - Basic installation and simple routing rules applied on RESTful service.
-- Modified Bookinfo scenario (Istio's main sample https://istio.io/docs/guides/bookinfo.html) with some services implemented with Ballerina.
-    - Showcase composite service development capabilities and how Ballerina works with Istio ecosystem (observability, service discovery etc.)

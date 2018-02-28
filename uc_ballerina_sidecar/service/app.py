@@ -8,7 +8,6 @@ app = Flask(__name__)
 
 @app.route('/order')
 def kasun():
-    #Call Redis service 
     return 'Hello from Order: microservice.'
 
 if __name__ == "__main__":
