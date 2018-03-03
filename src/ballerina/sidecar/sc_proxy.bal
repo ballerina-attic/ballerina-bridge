@@ -3,13 +3,12 @@ package ballerina.sidecar;
 import ballerina.net.http;
 import ballerina.log;
 
-
-// Mock implementation of a Ballerina Sidecar
-@http:configuration {basePath:"/hello", port:9090}
+// Exposed via a K8s service
+// Add K82 annotations
+@http:configuration {basePath:"/", port:9090}
 service<http> sc_proxy {
-    // Exposed via K8s service
     @http:resourceConfig {
-        path:"/"
+        path:"/*"
     }
     resource ingressTraffic (http:Connection conn, http:InRequest req) {
         // Traffic coming into the pod
