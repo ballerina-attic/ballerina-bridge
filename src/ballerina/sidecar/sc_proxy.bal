@@ -23,11 +23,8 @@ service<http> sc_proxy {
         http:InResponse clientResponse = {};
         http:HttpConnectorError err;
 
-        log:printInfo("Ballerina Sidecar Ingress");
-        var requestURL = req.getProperty("REQUEST_URL");
-
-        log:printInfo("Req : " + requestURL);
-        clientResponse, err = locationEP.forward(requestURL, req);
+        log:printInfo("Ballerina Sidecar Ingress : " + req.rawPath);
+        clientResponse, err = locationEP.forward(req.rawPath, req);
 
         http:OutResponse res = {};
         if (err != null) {
