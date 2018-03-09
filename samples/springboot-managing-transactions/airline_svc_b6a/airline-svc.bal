@@ -1,4 +1,4 @@
-package ballerina-airline-svc; 
+package airline_svc_b6a; 
 import ballerina.log;
 import ballerina.io;
 import ballerina.net.http;
@@ -10,7 +10,7 @@ import ballerina.net.http;
     host:"localhost",
     port:8889
 }
-service<http> FlightService {
+service<http> airline_service {
     string msg;
 
     @http:resourceConfig {
@@ -23,22 +23,21 @@ service<http> FlightService {
         // At the beginning of the transaction statement, since a transaction context has been received, this service
         // will register with the initiator as a participant.
         transaction {
-            json updateReq = req.getJsonPayload();
-            msg = io:sprintf("Flight reservation request received. flight:%j, count:%j",
-                             [updateReq.flight, updateReq.count]);
-            var count,err = (int)updateReq.count;
+            json reservationReq = req.getJsonPayload();
+            msg = io:sprintf("Flight reservation request received. name:%j, airline:%j",
+                             [reservationReq.full_name, reservationReq.airline]);
+
             log:printInfo(msg);
-            if (count > 5) {
+            if (reservationReq.airline.toString() == null) {
                 abort;
                 //res = {statusCode:500};
-                //json errRes = {"message":"Reservation count cannot exeed 5"};
                 //res.setJsonPayload(errRes);
             } else {
-                json jsonRes = {"message":"making reservation"};
+                json jsonRes = {"Airline reservation status ":reservationReq.airline, "name":reservationReq.full_name};
                 res = {statusCode:200};
                 res.setJsonPayload(jsonRes);
             }
-            err = conn.respond(res);
+            var err = conn.respond(res);
             if (err != null) {
                 log:printErrorCause("Could not send response back to initiator", err);
             } else {

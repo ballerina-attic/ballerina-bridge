@@ -1,38 +1,47 @@
 
 package travel_mgt_svc_b6a; 
-import ballerina.math;
 import ballerina.net.http;
 import ballerina.log;
-import ballerina.io;
 
-// This is the initiator of the distributed transaction
+// Initiator
 @http:configuration {
-    basePath:"/",
+    basePath:"/travel/reservation",
     host:"localhost",
     port:8000
 }
-service<http> BookingService {
-
+service<http> travel_mgt_svc {
     @http:resourceConfig {
-        methods:["GET"],
+        methods:["POST"],
         path:"/"
     }
-    resource init (http:Connection conn, http:InRequest req) {
-        http:OutResponse res;
+    resource reserve (http:Connection conn, http:InRequest req) {
+        http:OutResponse res = {};
         log:printInfo("Initiating booking transaction...");
+
+        json travelReq = req.getJsonPayload();
+
+        string fullName = travelReq.full_name.toString();
+        string departureCity = travelReq.departure_city.toString();
+        string destinationCity = travelReq.destination_city.toString();
+        string startDateStr = travelReq.state_date.toString();
+        string endDateStr = travelReq.end_date.toString();
+        string airline = travelReq.airline.toString();
+        string hotel = travelReq.hotel.toString();
 
         // When the transaction statement starts, a distributed transaction context will be created.
         transaction {
             // When a participant is called, the transaction context will be propagated and that participant
             // will get infected, and join the distributed transaction.
-            boolean flightRes = callFlightService();
-            boolean hotelRes = callHotelService();
-            if (flightRes && hotelRes) {
+
+            var airlineResJson, err1 = reserveFlight(fullName, departureCity, destinationCity, startDateStr, endDateStr, airline);
+            var hotelResJson, err2  = reserveHotel(fullName, departureCity, startDateStr, endDateStr, hotel);
+            if (err1 == null && err2 == null) {
                 res = {statusCode:200};
+                res.setJsonPayload({airline_reservation:airlineResJson, hotel_reservation:hotelResJson});
             } else {
                 res = {statusCode:500};
+                abort;
             }
-
         }
         // As soon as the transaction block ends, the 2-phase commit coordination protocol will run. All participants
         // will be prepared and then depending on the join outcome, either a notify commit or notify abort will
@@ -47,80 +56,52 @@ service<http> BookingService {
     }
 }
 
-function callFlightService () returns (boolean successful) {
-    endpoint<FlightClient> flightEP {
-        create FlightClient();
+function reserveFlight (string fullName, string departureCity, string destinationCity,
+                        string startDate, string endDate, string airline) returns (json response, error err) {
+    endpoint<http:HttpClient> arilineEP {
+        create http:HttpClient("http://127.0.0.1:8889", {});
     }
 
-    int count = 3;
-    json bizReq = {flight:"QR201", count:count};
-    var _, e = flightEP.reserveFlight(bizReq, "127.0.0.1", 8889);
-    if (e != null) {
-        successful = false;
-    } else {
-        successful = true;
-    }
-    return;
-}
+    json airlineReservationReq = {full_name:fullName, airline:airline, departure_city:departureCity,
+                      destination_city:destinationCity, state_date:startDate, end_date:endDate, airline:airline};
+    http:OutRequest req = {};
 
-function callHotelService () returns (boolean successful) {
-    endpoint<HotelClient> hotelEP {
-        create HotelClient();
-    }
+    req.setJsonPayload(airlineReservationReq);
+    var airlineReservationRes, e = arilineEP.post("/flight/reservation", req);
 
-    json bizReq = {fullName:"Foo Bar", checkIn:"01/20/2018",
-                      checkOut:"1/25/2018", rooms:2};
-    var _, e = hotelEP.reserveHotel(bizReq, "127.0.0.1", 9090);
-    if (e != null) {
-        successful = false;
-    } else {
-        successful = true;
-    }
-    return;
-}
-
-public connector FlightClient() {
-
-    action reserveFlight (json bizReq, string host, int port) returns (json jsonRes, error err) {
-        endpoint<http:HttpClient> bizEP {
-            create http:HttpClient("http://" + host + ":" + port + "/flight/reservation", {});
-        }
-        http:OutRequest req = {};
-        req.setJsonPayload(bizReq);
-        var res, e = bizEP.post("", req);
-        log:printInfo("Got response from : Airline Service");
-        if (e == null) {
-            if (res.statusCode != 200) {
+    if (e == null) {
+        if (airlineReservationRes.statusCode != 200) {
                 err = {message:"Error occurred"};
-            } else {
-                jsonRes = res.getJsonPayload();
-            }
         } else {
-            err = (error)e;
+            log:printInfo("Got response from : Airline Service");
+            response = airlineReservationRes.getJsonPayload();
         }
-        return;
+    } else {
+        err = (error)e;
     }
+    return response, err;
 }
 
-public connector HotelClient () {
-
-    action reserveHotel (json bizReq, string host, int port) returns (json jsonRes, error err) {
-        endpoint<http:HttpClient> bizEP {
-            create http:HttpClient("http://" + host + ":" + port + "/reservation/hotel", {});
-        }
-        http:OutRequest req = {};
-        req.setJsonPayload(bizReq);
-        var res, e = bizEP.post("", req);
-        log:printInfo("Got response from : Hotel Service");
-        if (e == null) {
-            if (res.statusCode != 200) {
-                err = {message:"Error occurred"};
-            } else {
-                jsonRes = res.getJsonPayload();
-            }
-        } else {
-            err = (error)e;
-        }
-        return;
+function reserveHotel (string fullName, string departureCity,
+                       string startDate, string endDate, string hotel) returns (json jsonRes, error err) {
+    endpoint<http:HttpClient> hotelEP {
+        create http:HttpClient("http://localhost:9090", {});
     }
+    json hotelReservationReq = {fullName:fullName, checkIn:startDate,
+                      checkOut:endDate, rooms:1};
+    http:OutRequest req = {};
+
+    req.setJsonPayload(hotelReservationReq);
+    var res, e = hotelEP.post("/reservation/hotel", req);
+    log:printInfo("Got response from : Hotel Service");
+    if (e == null) {
+        if (res.statusCode != 200) {
+            err = {message:"Error occurred"};
+        } else {
+            jsonRes = res.getJsonPayload();
+        }
+    } else {
+        err = (error)e;
+    }
+    return jsonRes, err;
 }

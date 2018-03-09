@@ -1,14 +1,16 @@
-# Ballerina Sidecar 
+# Distributed Transactions with SpringBoot  
 
 
-1. Build Ballerina executable archive:
 
-`` $ballerina build ballerina/sidecar   ``
+- Travel Mgt Service Req 
 
-2. Building Ballerina Sidecar Image 
+`` 
+{ "travel_type":"vacation", "full_name":"John Doe", "departure_city":"SF","destination_city":"Paris", "state_date":"2018-03-20T00:00:00.000Z", "end_date":"2018-03-30T00:00:00.000Z", "airline":"delta", "hotel":"hilton"}
+``
 
-`` $ballerina docker sc_proxy.balx -t kasunindrasiri/ballerinasidecar ``
 
-3. Create the required docker images for the services that you want to run with the Sidecar and 
-deploy it into Kubernetes (e.g. samples/springboot-helloworld)
+curl -v -X POST -d '{ "travel_type":"vacation", "full_name":"John Doe", "departure_city":"SF","destination_city":"Paris", "state_date":"2018-03-20T00:00:00.000Z", "end_date":"2018-03-30T00:00:00.000Z", "airline":"delta", "hotel":"hilton"}' \
+ "http://localhost:8000/travel/reservation" -H "Content-Type:application/json"
 
+
+- 
