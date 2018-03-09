@@ -1,6 +1,8 @@
-# Distributed Transactions with SpringBoot  
+# Distributed Transactions between Ballerina and Spring Boot using Ballerina Sidecar
 
 
+
+- Use case 
 
 - Travel Mgt Service Req 
 

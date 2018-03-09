@@ -56,7 +56,6 @@ service<http> travel_mgt_svc {
                 res.setJsonPayload({airline_reservation:airlineResJson, hotel_reservation:hotelResJson});
             } else {
                 res = {statusCode:500};
-                abort;
             }
         }
         // As soon as the transaction block ends, the 2-phase commit coordination protocol will run. All participants
@@ -109,11 +108,11 @@ function reserveHotel (string fullName, string departureCity,
 
     req.setJsonPayload(hotelReservationReq);
     var res, e = hotelEP.post("/reservation/hotel", req);
-    log:printInfo("Got response from : Hotel Service");
     if (e == null) {
         if (res.statusCode != 200) {
             err = {message:"Error occurred"};
         } else {
+            log:printInfo("Got response from : Hotel Service");
             jsonRes = res.getJsonPayload();
         }
     } else {

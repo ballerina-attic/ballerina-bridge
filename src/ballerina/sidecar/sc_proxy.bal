@@ -30,50 +30,41 @@ service<http> sc_proxy {
         path:"/*"
     }
     resource ingressTraffic (http:Connection conn, http:InRequest req) {
+        // Ingress traffic always talks to localhost
+        endpoint<http:HttpClient> locationEP {
+            create http:HttpClient("http://localhost:8080", {});
+        }
         // Traffic coming into the pod
         // Sidecar features such as Transactions, OAuth token validation, enabling observability for services etc. are handled here.
 
         // Port needs to be resolved from the environment.
 
         log:printInfo("Ballerina Sidecar Ingress : " + req.rawPath);
+
         if (req.rawPath.equalsIgnoreCase(TX_CALLBACK_PATH) ) {
             handleTxCallback(conn, req);
         }
 
-        // ToDO : FIX : Identify whether the request is part of a distributed TX.
-        boolean  isTransactional = true;
+        transaction {
+            http:InResponse clientResponse = {};
+            http:HttpConnectorError err;
+            http:OutResponse res = {};
 
-        if (isTransactional) {
-            transaction {
-                callPrimaryService(conn, req);
+            log:printInfo("Invoking service : " + req.rawPath);
+
+            clientResponse, err = locationEP.forward(req.rawPath, req);
+            if (err != null) {
+                res.statusCode = 500;
+                res.setStringPayload(err.message);
+
+            } else {
+                var statusCode, _ = (int)clientResponse.statusCode;
+                _ = conn.forward(clientResponse);
+                if (statusCode == 500) {
+                    abort;
+                }
             }
-        } else {
-            callPrimaryService(conn, req);
         }
-    }
-
-}
-
-function callPrimaryService(http:Connection conn, http:InRequest req) {
-
-    // Ingress traffic always talks to localhost
-    endpoint<http:HttpClient> locationEP {
-        create http:HttpClient("http://localhost:8080", {});
-    }
-
-    http:InResponse clientResponse = {};
-    http:HttpConnectorError err;
-    http:OutResponse res = {};
-
-    log:printInfo("Invoking service : " + req.rawPath);
-
-    clientResponse, err = locationEP.forward(req.rawPath, req);
-    if (err != null) {
-        res.statusCode = 500;
-        res.setStringPayload(err.message);
-        _ = conn.respond(res);
-    } else {
-        _ = conn.forward(clientResponse);
     }
 
 }
