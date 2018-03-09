@@ -19,8 +19,6 @@ package ballerina.sidecar;
 import ballerina.net.http;
 import ballerina.log;
 
-const string TX_CALLBACK_PATH = "/ballerina_sc/transaction/callback";
-
 // Exposed via a K8s service
 // Add K82 annotation
 @http:configuration {basePath:"/", port:9090}
@@ -40,10 +38,6 @@ service<http> sc_proxy {
         // Port needs to be resolved from the environment.
 
         log:printInfo("Ballerina Sidecar Ingress : " + req.rawPath);
-
-        if (req.rawPath.equalsIgnoreCase(TX_CALLBACK_PATH) ) {
-            handleTxCallback(conn, req);
-        }
 
         transaction {
             http:InResponse clientResponse = {};
@@ -66,11 +60,5 @@ service<http> sc_proxy {
             }
         }
     }
-
-}
-
-function handleTxCallback (http:Connection conn, http:InRequest req) {
-    log:printInfo("TX callback ...");
-    // ToDO :
 
 }
