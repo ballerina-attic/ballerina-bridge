@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ballerina-sc-springboot-helloworld
+  labels:
+    app: ballerina-sc-springboot-helloworld
+spec:
+  type: NodePort
+  ports:
+  - port: 9090
+  selector:
+    app: ballerina-sc-springboot-helloworld
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ballerina-sc-springboot-helloworld-v1
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ballerina-sc-springboot-helloworld
+        version: v1
+    spec:
+      containers:
+      - name: springboot-helloworld
+        image: kasunindrasiri/ballerina_sidecar_springboot_helloworld
+        imagePullPolicy: Always #Always
+        ports:
+        - containerPort: 8080
+      - name: ballerinasidecar
+        image: kasunindrasiri/ballerinasidecar
+        imagePullPolicy: Always #Always
+        ports:
+        - containerPort: 9090
+---
