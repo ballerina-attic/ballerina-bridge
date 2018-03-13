@@ -49,7 +49,7 @@ service<http> sidecar {
         if (err != null) {
             res.statusCode = 500;
             res.setStringPayload(err.message);
-            conn.respond(res);
+            _ = conn.respond(res);
         } else {
             _ = conn.forward(clientResponse);
         }
