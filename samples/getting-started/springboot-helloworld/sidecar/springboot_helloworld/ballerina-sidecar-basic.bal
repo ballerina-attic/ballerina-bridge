@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package sidecar.sbhelloworld;
+package sidecar.springboot_helloworld;
 
 import ballerina.net.http;
 import ballerina.log;
