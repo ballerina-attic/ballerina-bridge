@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ballerina_sidecar</groupId>
-    <artifactId>ballerina_sidecar_springboot_helloworld</artifactId>
+    <artifactId>springboot-helloworld</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>ballerina_sidecar_springboot_helloworld</name>
+    <name>springboot-helloworld</name>
     <url>http://maven.apache.org</url>
 
 
@@ -16,7 +16,7 @@
     </parent>
 
     <properties>
-        <docker.image.prefix>kasunindrasiri</docker.image.prefix>
+        <docker.image.prefix>sample-docker-image-prefix</docker.image.prefix>
     </properties>
 
     <dependencies>

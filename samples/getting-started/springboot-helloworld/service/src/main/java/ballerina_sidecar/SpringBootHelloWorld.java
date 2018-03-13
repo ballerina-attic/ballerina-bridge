@@ -12,7 +12,7 @@ public class SpringBootHelloWorld {
     @RequestMapping("/hello")
     @ResponseBody
     String hello() {
-        return "Hello World, from Spring Boot!";
+        return "Hello World, from Spring Boot and Ballerina Sidecar!";
     }
 
     public static void main(String[] args) throws Exception {
