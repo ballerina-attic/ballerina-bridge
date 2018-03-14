@@ -1,8 +1,13 @@
-# Distributed Transactions between Ballerina and Spring Boot using Ballerina Sidecar
+# Microtransactions with Ballerina Sidecar
 
 
+## Use case
 
-- Use case 
+
+![Ballerina Microtransactions with Spring Boot](images/transactions.png "Ballerina Microtransactions with Spring Boot")
+
+
+ 
 
 - Travel Mgt Service Req 
 
