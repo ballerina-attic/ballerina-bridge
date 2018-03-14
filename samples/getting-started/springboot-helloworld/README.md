@@ -2,25 +2,28 @@
 
 ## Use Case 
 
+This sample demonstrate a how a simple Spring Boot service can be deployed with Ballerina Sidecar. 
+
 ![Ballerina Sidecar with SpringBoot](images/getting_started.png "Ballerina Sidecar with SpringBoot")
 
 ## Building the use case 
 
 - The Spring Boot HelloWorld service is located at `` ballerina-sidecar/samples/getting-started/springboot-helloworld/service`` directory.  
 
-- You can build the executable and the docker image for Spring Boot HelloWorld service using the following mvn command.  
+- You can build the executable and the docker image for the Spring Boot HelloWorld service using the following mvn command.  
 
-`` $ mvn clean install -Ddocker.image.prefix=<your-docker-image-prefix> dockerfile:build ``
+    `` $ mvn clean install -Ddocker.image.prefix=<your-docker-image-prefix> dockerfile:build ``
 
 - Building Ballerina executable archive, docker image and K8s artifacts for the sidecar. 
 To do this, you can run the following command from the `` ballerina-sidecar/samples/getting-started/springboot-helloworld `` directory. 
 
-`` $ ballerina build sidecar/sbhelloworld``
+    `` $ ballerina build sidecar/sbhelloworld``
 
-This command creates the generates the Kubernetes artifacts at`` target/sbhelloworld/kubernetes ``. 
+This command creates the generates the Kubernetes artifacts at`` target/sbhelloworld/kubernetes `` and the required docker images.  
 
 ## Running on Kubernetes  
 
+- So, far we have generated the deployment descriptors required for Kubernetes. The next step is to inject your Spring Boot service deployment descriptor that we created above.  
 - Inject your Spring Boot HelloWorld service container into the deployment descriptor which is created from the previous step. You only need to change the `` sbhelloworld-deployment.yaml `` as follows:  
 
 ```
@@ -77,6 +80,7 @@ sidecar      sidecar.com                80, 443   3h
 - Access the sidecar service via Node port or Ingress. 
 
 Node Port: 
+You can access the service via Node Port as follows. 
 ```
 curl http://localhost:31493/hello
  Hello World, from Spring Boot and Ballerina Sidecar!
@@ -84,7 +88,7 @@ curl http://localhost:31493/hello
 ```
 
 Ingress: 
-
+To access the service via Ingress interface, you should modify the following entry. 
 Add /etc/host entry to match hostname. 
 
 ```
