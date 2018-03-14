@@ -5,7 +5,7 @@ There are unique features of Ballerina sidecar which are not offered from any of
  
  ## Key Features 
  
- - Ballerina Microtransactions. 
+ - Ballerina Micro-Transactions. 
  - Security (TLS, JWT Token validation, Basic Authentication and Authorization)
  - Observability (Logging, Tracing and Metrics).
- - Reliable asynchrnous delivery.
+ - Reliable asynchronous delivery.
