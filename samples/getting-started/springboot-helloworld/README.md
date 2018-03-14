@@ -1,5 +1,10 @@
 # Running Spring Boot HelloWorld service with Ballerina Sidecar 
 
+## Use Case 
+
+![Ballerina Sidecar with SpringBoot](images/getting_started.png "Ballerina Sidecar with SpringBoot")
+
+## Building the use case 
 
 - The Spring Boot HelloWorld service is located at `` ballerina-sidecar/samples/getting-started/springboot-helloworld/service`` directory.  
 
