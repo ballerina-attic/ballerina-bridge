@@ -49,7 +49,6 @@ service<http> sidecar {
         http:HttpConnectorError err;
         http:OutResponse res = {};
 
-        log:printTrace("Invoking service : " + req.rawPath);
         clientResponse, err = locationEP.forward(req.rawPath, req);
         if (err != null) {
             res.statusCode = 500;

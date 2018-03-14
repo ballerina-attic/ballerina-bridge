@@ -32,21 +32,23 @@ import ballerinax.kubernetes;
     keyStorePassword:"ballerina",
     certPassword:"ballerina"
 }
-service<http> sidecar_basic_auth {
+service<http> sidecar {
 
     @http:resourceConfig {
         path:"/*"
     }
     resource ingressTraffic (http:Connection conn, http:InRequest req) {
         // Ingress traffic always talks to localhost
-        // Port needs to be resolved from the environment.
         endpoint<http:HttpClient> locationEP {
             create http:HttpClient("http://localhost:8080", {});
         }
 
-        log:printInfo("Ballerina Sidecar Ingress : " + req.rawPath);
+        log:printTrace("Ballerina Sidecar Ingress : " + req.rawPath);
 
+        // Basic Authentication
         basic:HttpBasicAuthnHandler authnHandler = {};
+
+        // Authorization
         // authz:HttpAuthzHandler authzHandler = {};
 
         http:InResponse clientResponse = {};
@@ -54,8 +56,7 @@ service<http> sidecar_basic_auth {
         http:OutResponse res = {};
         boolean isAuthenticated = false;
 
-        log:printTrace("Invoking service : " + req.rawPath);
-
+        // Basic authentication handler
         if (!authnHandler.handle(req)) {
             res = {statusCode:401, reasonPhrase:"Unauthenticated"};
         } else {
@@ -67,7 +68,6 @@ service<http> sidecar_basic_auth {
             res.statusCode = 500;
             res.setStringPayload(err.message);
             _ = conn.respond(res);
-
         } else {
             _ = conn.forward(clientResponse);
         }

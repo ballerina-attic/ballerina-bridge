@@ -99,7 +99,7 @@ $ curl http://helloworld.com/hello
 ```
 
 
-## Running on Local Machine 
+## Running locally 
   
 
 - Run the sidecar proxy 

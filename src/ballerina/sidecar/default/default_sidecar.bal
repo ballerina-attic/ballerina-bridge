@@ -14,15 +14,19 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package ballerina.sidecar.transactions;
+package ballerina.sidecar;
 
 import ballerina.net.http;
 import ballerina.log;
+import ballerinax.kubernetes;
 
-// Exposed via a K8s service
-// Add K82 annotation
+@kubernetes:svc {}
+@kubernetes :ingress {
+    hostname:"ballerina.sidecar.io",
+    path:"/"
+}
 @http:configuration {basePath:"/", port:9090}
-service<http> sidecar_transactions {
+service<http> sidecar {
 
     @http:resourceConfig {
         path:"/*"
@@ -32,25 +36,20 @@ service<http> sidecar_transactions {
         endpoint<http:HttpClient> locationEP {
             create http:HttpClient("http://localhost:8080", {});
         }
-        // Traffic coming into the pod
-        // Sidecar features such as Transactions, OAuth token validation, enabling observability for services etc. are handled here.
+        // Sidecar features such as Transactions, Security (JWT, Basic-Auth tokens, and Authorization) validation, Enabling observability,
+        // are applied inside the Sidecar's routing logic.
 
-        // Port needs to be resolved from the environment.
-
-        log:printInfo("Ballerina Sidecar Ingress : " + req.rawPath);
+        log:printTrace("Ballerina Sidecar Ingress : " + req.rawPath);
 
         transaction {
             http:InResponse clientResponse = {};
             http:HttpConnectorError err;
             http:OutResponse res = {};
 
-            log:printInfo("Invoking service : " + req.rawPath);
-
             clientResponse, err = locationEP.forward(req.rawPath, req);
             if (err != null) {
                 res.statusCode = 500;
                 res.setStringPayload(err.message);
-
             } else {
                 var statusCode, _ = (int)clientResponse.statusCode;
                 _ = conn.forward(clientResponse);

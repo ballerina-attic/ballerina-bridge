@@ -30,41 +30,35 @@ import ballerinax.kubernetes;
     keyStorePassword:"ballerina",
     certPassword:"ballerina"
 }
-service<http> sidecar_jwt {
+service<http> sidecar {
 
     @http:resourceConfig {
         path:"/*"
     }
     resource ingressTraffic (http:Connection conn, http:InRequest req) {
         // Ingress traffic always talks to localhost
-        // Port needs to be resolved from the environment.
         endpoint<http:HttpClient> locationEP {
             create http:HttpClient("http://localhost:8080", {});
         }
 
-        log:printInfo("Ballerina Sidecar Ingress : " + req.rawPath);
+        log:printTrace("Ballerina Sidecar Ingress : " + req.rawPath);
 
-
+        // Validating JWT Token
         jwtAuth:HttpJwtAuthnHandler handler = {};
         boolean isAuthenticated = false;
         if (handler.canHandle(req)) {
             isAuthenticated = handler.handle(req);
         }
 
-
         http:InResponse clientResponse = {};
         http:HttpConnectorError err;
         http:OutResponse res = {};
-
-        log:printTrace("Invoking service : " + req.rawPath);
-        log:printInfo("Invoking service : " + req.rawPath);
 
         clientResponse, err = locationEP.forward(req.rawPath, req);
         if (err != null || !isAuthenticated) {
             res.statusCode = 500;
             res.setStringPayload(err.message);
             _ = conn.respond(res);
-
         } else {
             _ = conn.forward(clientResponse);
         }
