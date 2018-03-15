@@ -17,9 +17,10 @@ This sample demonstrate a how a simple Spring Boot service can be deployed with 
 - Building Ballerina executable archive, docker image and K8s artifacts for the sidecar. 
 To do this, you can run the following command from the `` ballerina-sidecar/samples/getting-started/springboot-helloworld `` directory. 
 
-    `` $ ballerina build sidecar/sbhelloworld``
 
-This command creates the generates the Kubernetes artifacts at`` target/sbhelloworld/kubernetes `` and the required docker images.  
+    `` $ ballerina build sidecar/springboot_helloworld``
+
+This command creates the generates the Kubernetes artifacts at`` target/springboot_helloworld/kubernetes `` and the required docker images.  
 
 ## Running on Kubernetes  
 
