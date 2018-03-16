@@ -6,26 +6,19 @@ This sample demonstrate a how a simple Spring Boot service can be deployed with 
 
 ![Ballerina Sidecar with SpringBoot](images/getting_started.png "Ballerina Sidecar with SpringBoot")
 
-## Building the use case 
 
+### Building the Spring Boot service 
 - The Spring Boot HelloWorld service is located at `` ballerina-sidecar/samples/getting-started/springboot-helloworld/service`` directory.  
 
 - You can build the executable and the docker image for the Spring Boot HelloWorld service using the following mvn command.  
 
     `` $ mvn clean install -Ddocker.image.prefix=<your-docker-image-prefix> dockerfile:build ``
 
-- Building Ballerina executable archive, docker image and K8s artifacts for the sidecar. 
-To do this, you can run the following command from the `` ballerina-sidecar/samples/getting-started/springboot-helloworld `` directory. 
-
-
-    `` $ ballerina build sidecar/springboot_helloworld``
-
-This command creates the generates the Kubernetes artifacts at`` target/springboot_helloworld/kubernetes `` and the required docker images.  
-
 ## Running on Kubernetes  
 
-- So, far we have generated the deployment descriptors required for Kubernetes. The next step is to inject your Spring Boot service deployment descriptor that we created above.  
-- Inject your Spring Boot HelloWorld service container into the deployment descriptor which is created from the previous step. You only need to change the `` sbhelloworld-deployment.yaml `` as follows:  
+- The Ballerina Sidecar ships with the Kubernetes deployment artifacts that you can use to deploy sidecar with your non-ballerina services. They are located in `` src/kubernetes``. 
+- Copy ``src/kubernetes`` artifacts to `` samples/getting-started `` and inject your Spring Boot service deployment information to the deployment descriptor. 
+- You can do this by changing the `` kubernetes/sidecar-deployment.yaml `` as follows:  
 
 ```
         ... 
@@ -41,40 +34,36 @@ This command creates the generates the Kubernetes artifacts at`` target/springbo
          
          ... 
 ```
-- Now you can deploy the Kubernetes artifacts with `` kubectl create -f target/sbhelloworld/kubernetes``. With successful execution, you should see:
+- Now you can deploy the Kubernetes artifacts with `` kubectl create -f ./samples/getting-started/kubernetes``. With successful execution, you should see:
 
 ```
     $ kubectl create -f target/sbhelloworld/kubernetes
-        deployment "sbhelloworld-deployment" created
-        ingress "sidecar" created
-        service "sidecar" created
+        deployment "ballerina-sidecar" created
+        ingress "ballerina-sidecar-ingress" created
+        service "ballerina-sidecar-svc" created
 ```
 
 - Verify Kubernetes deployment,service and ingress is running. 
 
 ```
 
-$kubectl get svc
+$ kubectl get svc
 
 NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
-kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP          4h
-sidecar      NodePort    10.104.175.28   <none>        9090:31493/TCP   3h
+ballerina-sidecar-svc   NodePort    10.108.155.112   <none>        9090:30824/TCP   59s
 
 
-kubectl get deploy
+$ kubectl get deploy
 NAME                         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-hello-world-k8s-deployment   1         1         1            1           4h
-sbhelloworld-deployment      1         1         1            1           3h
+ballerina-sidecar            1         1         1            1           1m
 
-kubectl get pods
+$ kubectl get pods
 NAME                                         READY     STATUS    RESTARTS   AGE
-hello-world-k8s-deployment-bf8f98c7c-ql6wc   1/1       Running   0          4h
-sbhelloworld-deployment-7d766dbf75-6dbxb     2/2       Running   0          3h
+ballerina-sidecar-5b9bb94b44-v97xs           1/1       Running   0          1m
 
-kubectl get ingress
-NAME         HOSTS            ADDRESS   PORTS     AGE
-helloworld   helloworld.com             80, 443   4h
-sidecar      sidecar.com                80, 443   3h
+$ kubectl get ingress
+NAME                        HOSTS                  ADDRESS   PORTS     AGE
+ballerina-sidecar-ingress   ballerina.sidecar.io             80, 443   1m
 
 ```
 

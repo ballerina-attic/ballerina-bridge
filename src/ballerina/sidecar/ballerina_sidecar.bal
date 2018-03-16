@@ -20,9 +20,16 @@ import ballerina.net.http;
 import ballerina.log;
 import ballerinax.kubernetes;
 
-@kubernetes:svc {}
+@kubernetes:svc {
+    name:"ballerina-sidecar-svc"
+}
+@kubernetes:deployment {
+    image:"kasunindrasiri/ballerina-sidecar:1.0.0",
+    name: "ballerina-sidecar"
+}
 @kubernetes :ingress {
     hostname:"ballerina.sidecar.io",
+    name:"ballerina-sidecar-ingress",
     path:"/"
 }
 @http:configuration {basePath:"/", port:9090}
