@@ -34,7 +34,7 @@ This sample demonstrate a how a simple Spring Boot service can be deployed with 
          
          ... 
 ```
-- Now you can deploy the Kubernetes artifacts with `` kubectl create -f ./samples/getting-started/kubernetes``. With successful execution, you should see:
+- Now you can deploy the Kubernetes artifacts with `` kubectl create -f ./samples/getting-started/kubernetes``. If the deployment is successful, you should see:
 
 ```
     $ kubectl create -f target/sbhelloworld/kubernetes
@@ -43,7 +43,7 @@ This sample demonstrate a how a simple Spring Boot service can be deployed with 
         service "ballerina-sidecar-svc" created
 ```
 
-- Verify Kubernetes deployment,service and ingress is running. 
+- Verify Kubernetes deployment, service and ingress is running. 
 
 ```
 
