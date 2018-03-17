@@ -16,9 +16,10 @@ This sample demonstrate a how a simple Spring Boot service can be deployed with 
 
 ## Running on Kubernetes  
 
+- You can integrate Ballerina Sidecar with your non-Ballerina service by pulling the Ballerina sidecar image and deploying it alongside your non-Ballerina service in the same Kubernetes pod. 
 - The Ballerina Sidecar ships with the Kubernetes deployment artifacts that you can use to deploy sidecar with your non-ballerina services. They are located in `` src/kubernetes``. 
 - Copy ``src/kubernetes`` artifacts to `` samples/getting-started `` and inject your Spring Boot service deployment information to the deployment descriptor. 
-- You can do this by changing the `` kubernetes/sidecar-deployment.yaml `` as follows:  
+- For this sample scenario, you can do this by changing the `` kubernetes/sidecar-deployment.yaml `` as shown below:  
 
 ```
         ... 
