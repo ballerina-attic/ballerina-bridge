@@ -18,13 +18,24 @@ package ballerina.sidecar;
 
 import ballerina.net.http;
 import ballerina.log;
+import ballerina.config;
 import ballerinax.kubernetes;
+import ballerina.os;
+
+
+const string SIDECAR_HTTP_PORT = "SIDECAR_HTTP_PORT";
+const string SERVICE_PORT = "SERVICE_PORT";
+
+const int scHttpPort = initPort(SIDECAR_HTTP_PORT);
+const int serviceHttpPort = initPort(SERVICE_PORT);
+
 
 @kubernetes:svc {
     name:"ballerina-sidecar-svc"
 }
 @kubernetes:deployment {
     image:"kasunindrasiri/ballerina-sidecar:1.0.0",
+    env:"SIDECAR_HTTP_PORT:9090, SERVICE_PORT:8080",
     name: "ballerina-sidecar"
 }
 @kubernetes :ingress {
@@ -32,7 +43,7 @@ import ballerinax.kubernetes;
     name:"ballerina-sidecar-ingress",
     path:"/"
 }
-@http:configuration {basePath:"/", port:9090}
+@http:configuration {basePath:"/", port:scHttpPort}
 service<http> sidecar {
 
     @http:resourceConfig {
@@ -41,7 +52,7 @@ service<http> sidecar {
     resource ingressTraffic (http:Connection conn, http:InRequest req) {
         // Ingress traffic always talks to localhost
         endpoint<http:HttpClient> locationEP {
-            create http:HttpClient("http://localhost:8080", {});
+            create http:HttpClient("http://localhost:" + serviceHttpPort, {});
         }
         // Sidecar features such as Transactions, Security (JWT, Basic-Auth tokens, and Authorization) validation, Enabling observability,
         // are applied inside the Sidecar's routing logic.
@@ -68,4 +79,13 @@ service<http> sidecar {
         }
     }
 
+}
+
+function initPort (string envVarName) (int) {
+    string portStr = os:getEnv(envVarName);
+    var port, typeConversionErr = <int> portStr;
+    if (typeConversionErr != null) {
+        log:printError("Invalid port : " + portStr + " : " + typeConversionErr.message);
+    }
+    return port;
 }

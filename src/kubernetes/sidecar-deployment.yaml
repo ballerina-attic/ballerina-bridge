@@ -22,7 +22,11 @@ spec:
       containers:
       - args: []
         command: []
-        env: []
+        env:
+        - name: "SIDECAR_HTTP_PORT"
+          value: "9090"
+        - name: "SERVICE_PORT"
+          value: "8080"
         envFrom: []
         image: "kasunindrasiri/ballerina-sidecar:1.0.0"
         imagePullPolicy: "IfNotPresent"
