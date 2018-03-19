@@ -15,7 +15,7 @@
 # -----------------------------------------------------------------------
 
 FROM ballerina/ballerina:latest
-MAINTAINER ballerina Maintainers "dev@ballerina.io"
+LABEL maintainer="dev@ballerina.io"
 
 COPY sidecar.balx /home/ballerina 
 
