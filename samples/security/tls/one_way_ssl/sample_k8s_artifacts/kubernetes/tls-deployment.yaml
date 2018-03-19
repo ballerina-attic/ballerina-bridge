@@ -1,0 +1,50 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "tls"
+  name: "tls-deployment"
+  namespace: "default"
+  ownerReferences: []
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations: {}
+      finalizers: []
+      labels:
+        app: "tls"
+      ownerReferences: []
+    spec:
+      containers:
+      - name: springboot-helloworld
+        image: kasunindrasiri/ballerina_sidecar_springboot_helloworld
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8080
+      - args: []
+        command: []
+        env: []
+        envFrom: []
+        image: "tls:latest"
+        imagePullPolicy: "IfNotPresent"
+        name: "tls-deployment"
+        ports:
+        - containerPort: 9095
+          protocol: "TCP"
+        volumeMounts:
+        - name: keystore
+          mountPath: "/etc/keystore"
+          readOnly: true
+      hostAliases: []
+      imagePullSecrets: []
+      initContainers: []
+      nodeSelector: {}
+      tolerations: []
+      volumes:
+      - name: keystore
+        secret:
+          secretName: ballerina-key-store

@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ballerina-restful-svc
+  labels:
+    app: ballerina-restful-svc
+spec:
+  type: NodePort
+  ports:
+  - port: 9090
+    name: http
+  selector:
+    app: ballerina-restful-svc
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ballerina-restful-svc-v1
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ballerina-restful-svc
+        version: v1
+    spec:
+      containers:
+      - name: ballerina-restful-svc
+        image: kasunindrasiri/ballerina-helloworld
+        imagePullPolicy: Always #Always
+        ports:
+        - containerPort: 9090
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ballerina-restful-svc
+  annotations:
+    kubernetes.io/ingress.class: "istio"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /ballerina
+        backend:
+          serviceName: ballerina-restful-svc
+          servicePort: 9090
+---
