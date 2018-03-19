@@ -29,10 +29,22 @@ const string SERVICE_PORT = "SERVICE_PORT";
 const int scHttpPort = initPort(SIDECAR_HTTP_PORT);
 const int serviceHttpPort = initPort(SERVICE_PORT);
 
+// We haven't pass the above variables to service endpoint, as it is not working properly in the current build.
+
 
 @kubernetes:svc {
     name:"ballerina-sidecar-svc"
 }
+endpoint http:ServiceEndpoint sidecarIngressServiceEP {
+    port:9090
+};
+
+endpoint http:ClientEndpoint primaryServiceClientEP {
+  targets: [
+    { uri: "http://localhost:" + 8080}
+  ]
+};
+
 @kubernetes:deployment {
     image:"kasunindrasiri/ballerina-sidecar:1.0.0",
     env:"SIDECAR_HTTP_PORT:9090, SERVICE_PORT:8080",
@@ -43,40 +55,34 @@ const int serviceHttpPort = initPort(SERVICE_PORT);
     name:"ballerina-sidecar-ingress",
     path:"/"
 }
-@http:configuration {basePath:"/", port:scHttpPort}
-service<http> sidecar {
+
+
+@http:serviceConfig {
+    basePath:"/"
+}
+service<http:Service> sidecar bind sidecarIngressServiceEP {
 
     @http:resourceConfig {
         path:"/*"
     }
-    resource ingressTraffic (http:Connection conn, http:InRequest req) {
-        // Ingress traffic always talks to localhost
-        endpoint<http:HttpClient> locationEP {
-            create http:HttpClient("http://localhost:" + serviceHttpPort, {});
-        }
+    ingressTraffic (endpoint client, http:Request request) {
         // Sidecar features such as Transactions, Security (JWT, Basic-Auth tokens, and Authorization) validation, Enabling observability,
         // are applied inside the Sidecar's routing logic.
 
-        log:printTrace("Ballerina Sidecar Ingress : " + req.rawPath);
+        log:printTrace("Ballerina Sidecar Ingress : " + request.rawPath);
+        http:HttpConnectorError err;
+        http:Response clientResponse = {};
 
-        transaction {
-            http:InResponse clientResponse = {};
-            http:HttpConnectorError err;
-            http:OutResponse res = {};
+        clientResponse, err = primaryServiceClientEP -> forward(request.rawPath, request);
 
-            clientResponse, err = locationEP.forward(req.rawPath, req);
-            if (err != null) {
-                res.statusCode = 500;
-                res.setStringPayload(err.message);
-                _ = conn.respond(res);
-            } else {
-                var statusCode, _ = (int)clientResponse.statusCode;
-                _ = conn.forward(clientResponse);
-                if (statusCode == 500) {
-                    abort;
-                }
-            }
-        }
+        http:Response res = {};
+        if (err != null) {
+           res.statusCode = 500;
+           res.setStringPayload(err.message);
+           _ = client -> respond(res);
+       } else {
+           _ = client -> forward(clientResponse);
+       }
     }
 
 }
