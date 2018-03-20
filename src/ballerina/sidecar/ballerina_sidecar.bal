@@ -26,15 +26,14 @@ import ballerina.os;
 const string SIDECAR_HTTP_PORT = "SIDECAR_HTTP_PORT";
 const string SERVICE_PORT = "SERVICE_PORT";
 
-const int scHttpPort = initPort(SIDECAR_HTTP_PORT);
+//const int scHttpPort = initPort(SIDECAR_HTTP_PORT);
 const int serviceHttpPort = initPort(SERVICE_PORT);
-
-// We haven't pass the above variables to service endpoint, as it is not working properly in the current build.
-
 
 @kubernetes:svc {
     name:"ballerina-sidecar-svc"
 }
+
+// Using port from an integer variable is not working in
 endpoint http:ServiceEndpoint sidecarIngressServiceEP {
     port:9090
 };
@@ -46,7 +45,7 @@ endpoint http:ClientEndpoint primaryServiceClientEP {
 };
 
 @kubernetes:deployment {
-    image:"kasunindrasiri/ballerina-sidecar:1.0.0",
+    image: "kasunindrasiri/ballerina-sidecar",
     env:"SIDECAR_HTTP_PORT:9090, SERVICE_PORT:8080",
     name: "ballerina-sidecar"
 }
@@ -84,7 +83,6 @@ service<http:Service> sidecar bind sidecarIngressServiceEP {
            _ = client -> forward(clientResponse);
        }
     }
-
 }
 
 function initPort (string envVarName) (int) {
