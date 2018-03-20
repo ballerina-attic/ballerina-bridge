@@ -35,7 +35,12 @@ const int serviceHttpPort = initPort(SERVICE_PORT);
 
 // Using port from an integer variable is not working in
 endpoint http:ServiceEndpoint sidecarIngressServiceEP {
-    port:9090
+    port:9090,
+    ssl:{
+            keyStoreFile:"${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            keyStorePassword:"ballerina",
+            certPassword:"ballerina"
+        }
 };
 
 endpoint http:ClientEndpoint primaryServiceClientEP {
@@ -49,6 +54,15 @@ endpoint http:ClientEndpoint primaryServiceClientEP {
     env:"SIDECAR_HTTP_PORT:9090, SERVICE_PORT:8080",
     name: "ballerina-sidecar"
 }
+
+@kubernetes:configMap{
+    configMaps:[
+               { name:"ballerina-config",mountPath:"/home/ballerina/conf",
+                    data:["./conf/ballerina.conf"]
+        }
+    ]
+}
+
 @kubernetes :ingress {
     hostname:"ballerina.sidecar.io",
     name:"ballerina-sidecar-ingress",
@@ -68,9 +82,10 @@ service<http:Service> sidecar bind sidecarIngressServiceEP {
         // Sidecar features such as Transactions, Security (JWT, Basic-Auth tokens, and Authorization) validation, Enabling observability,
         // are applied inside the Sidecar's routing logic.
 
-        log:printTrace("Ballerina Sidecar Ingress : " + request.rawPath);
+        log:printInfo("Ballerina Sidecar Ingress : " + request.rawPath);
         http:HttpConnectorError err;
         http:Response clientResponse = {};
+
 
         clientResponse, err = primaryServiceClientEP -> forward(request.rawPath, request);
 
