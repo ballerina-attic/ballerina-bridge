@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package ballerina.sidecar;
+//package ballerina.sidecar;
 
 import ballerina.net.http;
 import ballerina.transactions.coordinator as coord;
@@ -22,16 +22,17 @@ import ballerina.util;
 import ballerina.io;
 import ballerina.log;
 
-const string host = "10.100.1.182"; //TODO: get this from an env var/config API
-const int port = 34456; //TODO: get this from an env var/config API
+const string sidecarHost = "10.100.1.182"; //TODO: get this from an env var/config API
+const int sidecarPort = 33333; //TODO: get this from an env var/config API
+const string maincarUrl = "http://10.100.5.131:8080/transaction"; //TODO: get this from an env var/config API
 
 endpoint http:ServiceEndpoint sidecarEP {
-    host: host,
-    port: port
+    host: sidecarHost,
+    port: sidecarPort
 };
 
 endpoint coord:Participant2pcClientEP maincarEP {
-    participantURL: "http://localhost:34455/", //TODO: get this from an env var/config API
+    participantURL: maincarUrl,
     endpointTimeout:120000, 
     retryConfig:{count:5, interval:5000}
 };
@@ -52,10 +53,10 @@ struct TwoPhaseCommitTransaction {
     coord:TransactionState state;
 }
 
-@http:serviceConfig {basePath:"/"}
+@http:ServiceConfig {basePath:"/"}
 service<http:Service> TransactionSidecar bind sidecarEP {
    
-    @http:resourceConfig {
+    @http:ResourceConfig {
         methods:["POST"]
     }
     register (endpoint conn, http:Request req) {
@@ -79,7 +80,7 @@ service<http:Service> TransactionSidecar bind sidecarEP {
             //TODO: set the proper protocol
             string protocol = "durable";
             //  "http://" + coordinatorHost + ":" + coordinatorPort + participant2pcCoordinatorBasePath + "/" + transactionBlockId;
-            coord:Protocol[] protocols = [{name:protocol, url:"http://" + host + ":" + port + "/" + transactionBlockId}];
+            coord:Protocol[] protocols = [{name:protocol, url:"http://" + sidecarHost + ":" + sidecarPort + "/" + transactionBlockId}];
             var txnCtx, err = coord:registerParticipantWithRemoteInitiator(txnId, 
                                                                             transactionBlockId, 
                                                                             regReq.registerAtUrl,
@@ -101,12 +102,12 @@ service<http:Service> TransactionSidecar bind sidecarEP {
         }
     }
 
-    @http:resourceConfig {
+    @http:ResourceConfig {
         methods:["POST"],
         path:"{transactionBlockId}/prepare"
     }
     prepare (endpoint conn, http:Request req, string transactionBlockId) {
-        http:Response res;
+        http:Response res = {statusCode:500};
         var payload, payloadError = req.getJsonPayload();
         var txnBlockId, txnBlockIdConversionErr = <int>transactionBlockId;
 
@@ -130,20 +131,20 @@ service<http:Service> TransactionSidecar bind sidecarEP {
                 prepareRes = {message:"Transaction-Unknown"};
             } else {
                 // Send the prepare call to the main car and get the response
-                string status = prepareMaincar(txnId);
+                string status = prepareMaincar(txn);
                 prepareRes = {message: status};
+                var j, _ = <json>prepareRes;
+                res = {statusCode:200};
+                res.setJsonPayload(j);
             }
-            var j, _ = <json>prepareRes;
-            res.setJsonPayload(j);
-            var connErr = conn -> respond(res);
-            if (connErr != null) {
-                log:printErrorCause("Sending response for prepare request for transaction " + txnId +
-                                    " failed", (error)connErr);
-            }
+        }
+        var connErr = conn -> respond(res);
+        if (connErr != null) {
+            log:printErrorCause("Sending response for prepare request failed", (error)connErr);
         }
     }
 
-    @http:resourceConfig {
+    @http:ResourceConfig {
         methods:["POST"],
         path:"{transactionBlockId}/notify"
     }
@@ -178,7 +179,7 @@ service<http:Service> TransactionSidecar bind sidecarEP {
                     } else {
                         // send the notify(commit) to the maincar
                         var status, err = notifyMaincar(txnId, notifyReq.message);
-                        if(err != null) {
+                        if(err == null) {
                             res = {statusCode:200};    
                             notifyRes = {message:"Committed"};
                         } else {
@@ -190,7 +191,7 @@ service<http:Service> TransactionSidecar bind sidecarEP {
                 } else if (notifyReq.message == "abort") {
                     // send the notify(abort) to the maincar
                     var status, err = notifyMaincar(txnId, notifyReq.message);
-                    if(err != null) {
+                    if(err == null) {
                         res = {statusCode:200};    
                         notifyRes = {message:"Aborted"};
                     } else {
@@ -212,8 +213,9 @@ service<http:Service> TransactionSidecar bind sidecarEP {
     }
 }
 
-function prepareMaincar(string transactionId) returns (string status){
+function prepareMaincar(TwoPhaseCommitTransaction txn) returns (string status){
     error err;
+    string transactionId = txn.transactionId;
     status, err = maincarEP -> prepare(transactionId);
     if (status == "aborted") {
         log:printInfo("Maincar aborted.");
@@ -227,8 +229,9 @@ function prepareMaincar(string transactionId) returns (string status){
     } else if (err != null) {
         log:printErrorCause("Maincar failed", err);
         removeTransaction(transactionId);
-        status = "aborted"; //TODO: Need to check this
+        status = "aborted";
     } else if (status == "prepared") {
+        txn.state = coord:TransactionState.PREPARED;
         log:printInfo("Maincar prepared");
     } else {
         string msg = "Invalid maincar status: " + status;
