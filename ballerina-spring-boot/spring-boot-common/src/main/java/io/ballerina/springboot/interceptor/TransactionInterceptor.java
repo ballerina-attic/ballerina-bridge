@@ -96,7 +96,6 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
             logger.error("Register Response Msg: " + responseEntity.getBody());
             return false;
         }
-        return true;
     }
 
     @Override
