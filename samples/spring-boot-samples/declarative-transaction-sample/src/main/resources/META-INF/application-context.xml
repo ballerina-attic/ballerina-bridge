@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+<!--    <context:annotation-config/>
+    <context:property-placeholder/>
+    <tx:annotation-driven />-->
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/hotel_db"/>
+        <property name="username" value="springuser"/>
+        <property name="password" value="spring"/>
+    </bean>
+
+    <!-- Initialization for TransactionManager -->
+
+    <jee:jndi-lookup id="jndiTemplate" jndi-name="jdbc/jpetstore"/>
+
+<!--    <bean id="txManager" class="ballerina.sidecar.samples.custom.BallerinaTransactionManager">
+        <property name="transactionManagerName" value="java:/comp/TransactionManager"/>
+    </bean>-->
+
+<!--    <jee:jndi-lookup id="userTransaction" jndi-name="java:/comp/UserTransaction" resource-ref="false"
+                     environment-ref="remoteEnv" />
+    <jee:jndi-lookup id="jtaTransactionManager" jndi-name="java:/comp/TransactionManager" resource-ref="false"
+                     environment-ref="remoteEnv" />-->
+
+<!--    <bean id="txManager" class="ballerina.sidecar.samples.custom.BallerinaTransactionManager"/>
+    <tx:annotation-driven transaction-manager="txManager"/>-->
+
+    <!-- Definition for ServiceImpl bean -->
+
+<!--    <bean id="BookingService" class="ballerina.sidecar.samples.transactions.BookingService">
+        <constructor-arg ref="ballerinaTransactionManager"/>
+    </bean>-->
+
+</beans>
