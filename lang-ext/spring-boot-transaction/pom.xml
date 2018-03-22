@@ -2,12 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.ballerina.springboot.sample</groupId>
-    <artifactId>spring-boot-samples</artifactId>
+    <groupId>io.ballerina.springboot</groupId>
+    <artifactId>spring-boot-transaction</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <name>Ballerina - Spring Boot Transactions</name>
+    <url>http://ballerinalang.org</url>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -15,28 +18,38 @@
         <version>2.0.0.RELEASE</version>
     </parent>
 
-    <modules>
-        <module>declarative-transaction-sample</module>
-        <module>programmatic-transaction-sample</module>
-    </modules>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>javax.transaction</groupId>
+                <artifactId>jta</artifactId>
+                <version>1.1</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework</groupId>
-                <artifactId>spring-jdbc</artifactId>
+                <artifactId>spring-tx</artifactId>
                 <version>5.0.4.RELEASE</version>
             </dependency>
             <dependency>
-                <groupId>io.ballerina.springboot</groupId>
-                <artifactId>spring-boot-common</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.3</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-httpclient</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>3.1</version>
             </dependency>
             <dependency>
                 <groupId>io.ballerina.springboot</groupId>
-                <artifactId>spring-boot-jdbc</artifactId>
+                <artifactId>ballerina-txn-common</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <modules>
+        <module>ballerina-txn-common</module>
+        <module>ballerina-txn-jdbc</module>
+    </modules>
 </project>
