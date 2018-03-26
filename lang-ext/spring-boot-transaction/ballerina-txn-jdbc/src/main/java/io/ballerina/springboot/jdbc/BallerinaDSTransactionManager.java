@@ -103,33 +103,41 @@ public class BallerinaDSTransactionManager extends DataSourceTransactionManager 
 
     @Override
     protected void prepareSynchronization(DefaultTransactionStatus status, TransactionDefinition definition) {
+
         super.prepareSynchronization(status, definition);
         String txnId = BallerinaTransactionRegistry.getTransactionId();
         if (logger.isDebugEnabled()) {
             logger.debug("Prepare Transaction Synchronization transaction Id: " + txnId);
         }
-        TransactionSynchronizationManager.registerSynchronization(
-                new TransactionSynchronizationAdapter() {
-                    @Override
-                    public void beforeCommit(boolean readOnly) {
-                        String txnId = BallerinaTransactionRegistry.getTransactionId();
-                        BallerinaTransactionRegistry.addTxnResources(txnId, getTxnResources());
-                        DefaultTransactionStatus transactionStatus = new DefaultTransactionStatus(status
-                                .getTransaction(), status.isNewTransaction(), status.isNewSynchronization(), status
-                                .isReadOnly(), status.isDebug(), status.getSuspendedResources());
-                        BallerinaTransactionRegistry.addTxnObject(txnId, transactionStatus);
+        if (txnId != null) {
+            TransactionSynchronizationManager.registerSynchronization(
+                    new TransactionSynchronizationAdapter() {
+                        @Override
+                        public void beforeCommit(boolean readOnly) {
 
-                        try {
-                            Field field = status.getClass().getDeclaredField(NEW_TRANSACTION_FIELD_NAME);
-                            field.setAccessible(true);
-                            field.set(status, false);
-                        } catch (NoSuchFieldException | IllegalAccessException e) {
-                            e.printStackTrace();
+                            String txnId = BallerinaTransactionRegistry.getTransactionId();
+                            BallerinaTransactionRegistry.addTxnResources(txnId, getTxnResources());
+                            DefaultTransactionStatus transactionStatus = new DefaultTransactionStatus(status
+                                    .getTransaction(), status.isNewTransaction(), status.isNewSynchronization(), status
+                                    .isReadOnly(), status.isDebug(), status.getSuspendedResources());
+                            BallerinaTransactionRegistry.addTxnObject(txnId, transactionStatus);
+                            // This is to disable commit action in the main transaction thread. We should not commit
+                            // spring boot transaction. Transaction handles by separate service call(notify) by
+                            // transaction initiator.
+                            try {
+                                // Disabling transaction by setting newTransaction property to false using reflection.
+                                Field field = status.getClass().getDeclaredField(NEW_TRANSACTION_FIELD_NAME);
+                                field.setAccessible(true);
+                                field.set(status, false);
+                            } catch (NoSuchFieldException | IllegalAccessException ignore) {
+                                logger.error("Internal server error. Failed while disabling commit action in main " +
+                                        "thread.");
+                            }
+                            BallerinaTransactionRegistry.addTxnStatus(txnId, PREPARE_PREPARED_RESPONSE);
+                            super.beforeCommit(readOnly);
                         }
-                        BallerinaTransactionRegistry.addTxnStatus(txnId, PREPARE_PREPARED_RESPONSE);
-                        super.beforeCommit(readOnly);
                     }
-                }
-        );
+            );
+        }
     }
 }
