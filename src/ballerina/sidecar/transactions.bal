@@ -16,29 +16,29 @@
 
 //package ballerina.sidecar;
 
-import ballerina.net.http;
-import ballerina.transactions.coordinator as coord;
-import ballerina.util;
-import ballerina.io;
-import ballerina.log;
+import ballerina/io;
+import ballerina/log;
+import ballerina/net.http;
+import ballerina/transactions.coordinator as coord;
+import ballerina/util;
 
 const string sidecarHost = "10.100.1.182"; //TODO: get this from an env var/config API
 const int sidecarPort = 33333; //TODO: get this from an env var/config API
 const string maincarUrl = "http://10.100.5.131:8080/transaction"; //TODO: get this from an env var/config API
 
 endpoint http:ServiceEndpoint sidecarEP {
-    host: sidecarHost,
-    port: sidecarPort
+    host:sidecarHost,
+    port:sidecarPort
 };
 
 endpoint coord:Participant2pcClientEP maincarEP {
-    participantURL: maincarUrl,
-    endpointTimeout:120000, 
+    participantURL:maincarUrl,
+    endpointTimeout:120000,
     retryConfig:{count:5, interval:5000}
 };
 
 string mainCarUrl;
-map participatedTransactions = {};
+map<TwoPhaseCommitTransaction> participatedTransactions = {};
 string localParticipantId = util:uuid();
 
 struct RegistrationRequest {
@@ -55,191 +55,170 @@ struct TwoPhaseCommitTransaction {
 
 @http:ServiceConfig {basePath:"/"}
 service<http:Service> TransactionSidecar bind sidecarEP {
-   
-    @http:ResourceConfig {
-        methods:["POST"]
-    }
-    register (endpoint conn, http:Request req) {
-        var payload, payloadError = req.getJsonPayload();
-        http:Response res;
-        if (payloadError != null) {
-            res = {statusCode:400};
-            coord:RequestError err = {errorMessage:"Bad Request"};
-            var resPayload, _ = <json>err;
-            res.setJsonPayload(resPayload);
-            var connErr = conn -> respond(res);
-            if (connErr != null) {
-                log:printErrorCause("Sending response to Bad Request for register request failed", (error)connErr);
-            }
-        } else {
-            var regReq, _ = <RegistrationRequest>(payload);
-            string participantId = localParticipantId ;
-            string txnId = regReq.transactionId;
-            int transactionBlockId = regReq.transactionBlockId;
 
-            //TODO: set the proper protocol
-            string protocol = "durable";
-            //  "http://" + coordinatorHost + ":" + coordinatorPort + participant2pcCoordinatorBasePath + "/" + transactionBlockId;
-            coord:Protocol[] protocols = [{name:protocol, url:"http://" + sidecarHost + ":" + sidecarPort + "/" + transactionBlockId}];
-            var txnCtx, err = coord:registerParticipantWithRemoteInitiator(txnId, 
-                                                                            transactionBlockId, 
-                                                                            regReq.registerAtUrl,
-                                                                            protocols);
-            io:println(txnCtx);
-            io:println(err);
-            if(err != null) {
-                res = {statusCode:500};
-            } else {
-                res = {statusCode:200};
+    @http:ResourceConfig {
+        methods:["POST"],
+        body:"regReq"
+    }
+    register (endpoint conn, http:Request req, RegistrationRequest regReq) {
+        http:Response res = {};
+
+        string participantId = localParticipantId;
+        string txnId = regReq.transactionId;
+        int transactionBlockId = regReq.transactionBlockId;
+
+        //TODO: set the proper protocol
+        string protocol = "durable";
+        //  "http://" + coordinatorHost + ":" + coordinatorPort + participant2pcCoordinatorBasePath + "/" + transactionBlockId;
+        coord:Protocol[] protocols = [{name:protocol, url:"http://" + sidecarHost + ":" + sidecarPort + "/" + transactionBlockId}];
+        var result = coord:registerParticipantWithRemoteInitiator(txnId, transactionBlockId,
+                                                                  regReq.registerAtUrl, protocols);
+        match result {
+            coord:TransactionContext txnCtx => {
+                io:println(txnCtx);
+                res.statusCode = 200;
                 res.setStringPayload("Registration with coordinator successful");
-                TwoPhaseCommitTransaction txn = {transactionId: txnId, state: coord:TransactionState.ACTIVE};
+                TwoPhaseCommitTransaction txn = {transactionId:txnId, state:coord:TransactionState.ACTIVE};
                 participatedTransactions[txnId] = txn;
             }
-            var connErr = conn -> respond(res);
-            if (connErr != null) {
-                log:printErrorCause("Sending response for register request failed", (error)connErr);
+            error err => {
+                res.statusCode = 500;
             }
+        }
+        var connResult = conn -> respond(res);
+        match connResult {
+            error err =>  log:printErrorCause("Sending response for register request failed", err);
+            null => return;
         }
     }
 
     @http:ResourceConfig {
         methods:["POST"],
-        path:"{transactionBlockId}/prepare"
+        path:"{transactionBlockId}/prepare",
+        body:"prepareReq"
     }
-    prepare (endpoint conn, http:Request req, string transactionBlockId) {
+    prepare (endpoint conn, http:Request req, int transactionBlockId, coord:PrepareRequest prepareReq) {
         http:Response res = {statusCode:500};
-        var payload, payloadError = req.getJsonPayload();
-        var txnBlockId, txnBlockIdConversionErr = <int>transactionBlockId;
+        string txnId = prepareReq.transactionId;
+        log:printInfo("Prepare received for transaction: " + txnId);
 
-        if (payloadError != null || txnBlockIdConversionErr != null) {
-            res = {statusCode:400};
-            coord:RequestError err = {errorMessage:"Bad Request"};
-            var resPayload, _ = <json>err;
-            res.setJsonPayload(resPayload);
-            var connErr = conn -> respond(res);
-            if (connErr != null) {
-                log:printErrorCause("Sending response to Bad Request for prepare request failed", (error)connErr);
-            }
+        coord:PrepareResponse prepareRes = {};
+        if(!participatedTransactions.hasKey(txnId)) {
+            res.statusCode = 404;
+            prepareRes.message = "Transaction-Unknown";
         } else {
-            var prepareReq, _ = <coord:PrepareRequest>payload;
-            string txnId = prepareReq.transactionId;
-            log:printInfo("Prepare received for transaction: " + txnId);
-            coord:PrepareResponse prepareRes;
-            var txn, _ = (TwoPhaseCommitTransaction)participatedTransactions[txnId];
-            if (txn == null) {
-                res = {statusCode:404};
-                prepareRes = {message:"Transaction-Unknown"};
-            } else {
-                // Send the prepare call to the main car and get the response
-                string status = prepareMaincar(txn);
-                prepareRes = {message: status};
-                var j, _ = <json>prepareRes;
-                res = {statusCode:200};
-                res.setJsonPayload(j);
-            }
+            TwoPhaseCommitTransaction txn = participatedTransactions[txnId];
+            // Send the prepare call to the main car and get the response
+            string status = prepareMaincar(txn);
+            prepareRes.message = status;
+            var j =? <json>prepareRes;
+            res.statusCode = 200;
+            res.setJsonPayload(j);
         }
-        var connErr = conn -> respond(res);
-        if (connErr != null) {
-            log:printErrorCause("Sending response for prepare request failed", (error)connErr);
+        var connResult = conn -> respond(res);
+        match connResult {
+            error err =>  log:printErrorCause("Sending response for prepare request failed", err);
+            null => return;
         }
     }
 
     @http:ResourceConfig {
         methods:["POST"],
-        path:"{transactionBlockId}/notify"
+        path:"{transactionBlockId}/notify",
+        body:"notifyReq"
     }
-    notify (endpoint conn, http:Request req, string transactionBlockId) {
-        http:Response res;
-        var payload, payloadError = req.getJsonPayload();
-        var txnBlockId, txnBlockIdConversionErr = <int>transactionBlockId;
-        if (payloadError != null || txnBlockIdConversionErr != null) {
-            res = {statusCode:400};
-            coord:RequestError err = {errorMessage:"Bad Request"};
-            var resPayload, _ = <json>err;
-            res.setJsonPayload(resPayload);
-            var connErr = conn -> respond(res);
-            if (connErr != null) {
-                log:printErrorCause("Sending response to Bad Request for notify request failed", (error)connErr);
-            }
-        } else {
-            var notifyReq, _ = <coord:NotifyRequest>payload;
-            string txnId = notifyReq.transactionId;
-            log:printInfo("Notify(" + notifyReq.message + ") received for transaction: " + txnId);
+    notify (endpoint conn, http:Request req, int transactionBlockId, coord:NotifyRequest notifyReq) {
+        http:Response res = {statusCode:500};
+        string txnId = notifyReq.transactionId;
+        log:printInfo("Notify(" + notifyReq.message + ") received for transaction: " + txnId);
 
-            coord:NotifyResponse notifyRes;
-            var txn, _ = (TwoPhaseCommitTransaction)participatedTransactions[txnId];
-            if (txn == null) {
-                res = {statusCode:404};
-                notifyRes = {message:"Transaction-Unknown"};
-            } else {
-                if (notifyReq.message == "commit") {
-                    if (txn.state != coord:TransactionState.PREPARED) {
-                        res = {statusCode:400};
-                        notifyRes = {message:"Not-Prepared"};
-                    } else {
-                        // send the notify(commit) to the maincar
-                        var status, err = notifyMaincar(txnId, notifyReq.message);
-                        if(err == null) {
-                            res = {statusCode:200};    
-                            notifyRes = {message:"Committed"};
-                        } else {
-                            res = {statusCode:500};
+        coord:NotifyResponse notifyRes = {};
+
+        if (!participatedTransactions.hasKey(txnId)) {
+            res.statusCode = 404;
+            notifyRes.message = "Transaction-Unknown";
+        } else {
+            TwoPhaseCommitTransaction txn = participatedTransactions[txnId];
+
+            if (notifyReq.message == coord:COMMAND_COMMIT) {
+                if (txn.state != coord:TransactionState.PREPARED) {
+                    res.statusCode = 400;
+                    notifyRes.message = coord:OUTCOME_NOT_PREPARED;
+                } else {
+                    // send the notify(commit) to the maincar
+                    var result = notifyMaincar(txnId, notifyReq.message);
+                    match result {
+                        string => {
+                            res.statusCode = 200;
+                            notifyRes.message = coord:OUTCOME_COMMITTED;
+                        }
+                        error => {
+                            res.statusCode = 500;
                             log:printError("Committing maincar failed. Transaction:" + txnId);
-                            notifyRes = {message:"Failed-EOT"};
+                            notifyRes.message = coord:OUTCOME_FAILED_EOT;
                         }
                     }
-                } else if (notifyReq.message == "abort") {
-                    // send the notify(abort) to the maincar
-                    var status, err = notifyMaincar(txnId, notifyReq.message);
-                    if(err == null) {
-                        res = {statusCode:200};    
-                        notifyRes = {message:"Aborted"};
-                    } else {
-                        res = {statusCode:500};
+                }
+            } else if (notifyReq.message == coord:COMMAND_ABORT) {
+                // send the notify(abort) to the maincar
+                var result = notifyMaincar(txnId, notifyReq.message);
+                match result {
+                    string => {
+                        res.statusCode = 200;
+                        notifyRes.message = coord:OUTCOME_ABORTED;
+                    }
+                    error => {
+                        res.statusCode = 500;
                         log:printError("Aborting maincar failed. Transaction:" + txnId);
-                        notifyRes = {message:"Failed-EOT"};
+                        notifyRes.message = coord:OUTCOME_FAILED_EOT;
                     }
                 }
-                removeTransaction(txnId);
             }
-            var j, _ = <json>notifyRes;
+            removeTransaction(txnId);
+            var j =? <json>notifyRes;
             res.setJsonPayload(j);
-            var connErr = conn -> respond(res);
-            if (connErr != null) {
-                log:printErrorCause("Sending response for notify request for transaction " + txnId +
-                                    " failed", (error)connErr);
+            var connResult = conn -> respond(res);
+            match connResult {
+                error err =>  log:printErrorCause("Sending response for notify request for transaction " + txnId + " failed", err);
+                null => return;
             }
         }
     }
 }
 
-function prepareMaincar(TwoPhaseCommitTransaction txn) returns (string status){
-    error err;
+function prepareMaincar(TwoPhaseCommitTransaction txn) returns string { // return status
+    string status;
     string transactionId = txn.transactionId;
-    status, err = maincarEP -> prepare(transactionId);
-    if (status == "aborted") {
-        log:printInfo("Maincar aborted.");
-        removeTransaction(transactionId);
-    } else if (status == "committed") {
-        log:printInfo("Maincar committed");
-        removeTransaction(transactionId);
-    } else if (status == "read-only") {
-        log:printInfo("Maincar read-only");
-        removeTransaction(transactionId);
-    } else if (err != null) {
-        log:printErrorCause("Maincar failed", err);
-        removeTransaction(transactionId);
-        status = "aborted";
-    } else if (status == "prepared") {
-        txn.state = coord:TransactionState.PREPARED;
-        log:printInfo("Maincar prepared");
-    } else {
-        string msg = "Invalid maincar status: " + status;
-        log:printInfo(msg);
-        error e = {message: msg};
-        throw e;
+    var result = maincarEP -> prepare(transactionId);
+    match result {
+        error err => {
+            log:printErrorCause("Maincar failed", err);
+            removeTransaction(transactionId);
+            status = coord:OUTCOME_ABORTED;
+        }
+        string str => {
+            if (str == coord:OUTCOME_ABORTED) {
+                log:printInfo("Maincar aborted.");
+                removeTransaction(transactionId);
+            } else if (str == coord:OUTCOME_COMMITTED) {
+                log:printInfo("Maincar committed");
+                removeTransaction(transactionId);
+            } else if (str == coord:OUTCOME_READ_ONLY) {
+                log:printInfo("Maincar read-only");
+                removeTransaction(transactionId);
+            } else if (str == coord:OUTCOME_PREPARED) {
+                txn.state = coord:TransactionState.PREPARED;
+                log:printInfo("Maincar prepared");
+            } else {
+                string msg = "Invalid maincar status: " + status;
+                log:printInfo(msg);
+                error e = {message: msg};
+                throw e;
+            }
+            status = str;
+        }
     }
-    return;
+    return status;
 }
 
 function removeTransaction(string transactionId) {
@@ -248,23 +227,21 @@ function removeTransaction(string transactionId) {
     }
 }
 
-function notifyMaincar (string transactionId, string message) returns (string status, error err) {
+function notifyMaincar (string transactionId, string message) returns string|error { //(string status, error err)
     log:printInfo("Notify(" + message + ") maincar");
-    var notificationStatus, participantErr, communicationErr = maincarEP -> notify(transactionId, message);
-    status = notificationStatus;
-    if (communicationErr != null) {
-        if (message != "abort") {
-            err = communicationErr;
+    var result = maincarEP -> notify(transactionId, message);
+    match result {
+        error err => {
+            log:printErrorCause("Maincar replied with an error", err);
+            return err;
         }
-        log:printErrorCause("Communication error occurred while notify(" + message + ") maincar. 
-                            Transaction: " + transactionId, communicationErr);
-    } else if (participantErr != null) { // participant may return "Transaction-Unknown", "Not-Prepared" or "Failed-EOT"
-        log:printErrorCause("Maincar replied with an error", participantErr);
-        err = participantErr;
-    } else if (notificationStatus == "aborted") {
-        log:printInfo("Maincar aborted");
-    } else if (notificationStatus == "committed") {
-        log:printInfo("Maincar committed");
+        string notificationStatus => {
+            if (notificationStatus == coord:OUTCOME_ABORTED) {
+                log:printInfo("Maincar aborted");
+            } else if (notificationStatus == coord:OUTCOME_COMMITTED) {
+                log:printInfo("Maincar committed");
+            }
+            return notificationStatus;
+        }
     }
-    return;
 }
