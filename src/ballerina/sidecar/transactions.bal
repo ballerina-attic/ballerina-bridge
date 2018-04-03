@@ -76,7 +76,7 @@ service<http:Service> TransactionSidecar bind sidecarEP {
         match result {
             coord:TransactionContext txnCtx => {
                 io:println(txnCtx);
-                res.statusCode = 200;
+                res.statusCode = http:OK_200;
                 res.setStringPayload("Registration with coordinator successful");
                 TwoPhaseCommitTransaction txn = {transactionId:txnId, state:coord:TransactionState.ACTIVE};
                 participatedTransactions[txnId] = txn;
