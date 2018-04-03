@@ -36,6 +36,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -49,6 +52,9 @@ import javax.servlet.http.HttpServletResponse;
 public class TransactionInterceptor extends HandlerInterceptorAdapter {
 
     private final static Logger logger = LoggerFactory.getLogger(TransactionInterceptor.class);
+    //private static final String DEFAULT_REGISTER_URL = "http://10.100.1.182:33333/register";
+    private static final String TRANSACTION_REGISTER_URL = "transaction.register.url";
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String txnID = request.getHeader("X-XID");
@@ -61,10 +67,8 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
         }
         RegisterRequest registerRequest = new RegisterRequest();
         registerRequest.setRegisterAtUrl(registerAtUrl);
-        // TODO: figure out value needs to be send as transaction block id.
         registerRequest.setTransactionBlockId(1);
         registerRequest.setTransactionId(txnID);
-        BallerinaTransactionRegistry.setTransactionId(txnID);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Transaction Register request message: " + registerRequest);
@@ -80,20 +84,43 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
                 HttpComponentsClientHttpRequestFactory(HttpClients.createDefault());
         RestTemplate restTemplate = new RestTemplate(requestFactory);
 
-//        TODO: uncomplement when connecting to ballerina side car
-        ResponseEntity<String> responseEntity = restTemplate.exchange("http://10.100.1.182:33333/register",
-                HttpMethod.POST, entity, String.class);
+        String registerUrl = System.getProperty(TRANSACTION_REGISTER_URL);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Transaction Register Url : " + registerUrl);
+        }
+        if (registerUrl == null) {
+            String msg = "Transaction Register URL is not registered as system property. " +
+                    "Please set register url in system property: transaction.register.url";
+            response.getWriter().write(msg);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            logger.error(msg);
+            return false;
+        }
+        //check registered url is valid.
+        if (!isValidURL(registerUrl)) {
+            String msg = "Transaction register url is not a valid url.";
+            response.getWriter().write(msg);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            logger.error(msg);
+            return false;
+        }
+        ResponseEntity<String> responseEntity = restTemplate.exchange(System
+                .getProperty(TRANSACTION_REGISTER_URL), HttpMethod.POST, entity, String.class);
 
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Txn Register Response code: " + responseEntity.getStatusCode().toString());
-                logger.debug("Txn Register Response Msg: " + responseEntity.getBody());
+                logger.debug("Txn {} registration successful with response code: {}", txnID, responseEntity
+                        .getStatusCode());
+                logger.debug("Txn register response msg: " + responseEntity.getBody());
             }
+            BallerinaTransactionRegistry.setTransactionId(txnID);
             return true;
         } else {
             logger.error("Terminating service call, Transaction registration failed with status code: " +
                     responseEntity.getStatusCode().toString());
-            logger.error("Register Response Msg: " + responseEntity.getBody());
+            response.getWriter().write("Terminating service call, Transaction registration failed." +
+                    responseEntity.getBody());
+            response.setStatus(responseEntity.getStatusCode().value());
             return false;
         }
     }
@@ -101,5 +128,11 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable ModelAndView modelAndView) throws Exception {
         super.postHandle(request, response, handler, modelAndView);
+    }
+
+    private static boolean isValidURL(String urlString) throws MalformedURLException, URISyntaxException {
+        URL url = new URL(urlString);
+        url.toURI();
+        return true;
     }
 }
