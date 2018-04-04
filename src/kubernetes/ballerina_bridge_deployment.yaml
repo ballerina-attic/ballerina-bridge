@@ -1,0 +1,38 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "ballerina_bridge"
+  name: "ballerina-bridge"
+  ownerReferences: []
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations: {}
+      finalizers: []
+      labels:
+        app: "ballerina_bridge"
+      ownerReferences: []
+    spec:
+      containers:
+      - args: []
+        command: []
+        env: []
+        envFrom: []
+        image: "kasunindrasiri/ballerina-bridge"
+        imagePullPolicy: "IfNotPresent"
+        name: "ballerina-bridge"
+        ports:
+        - containerPort: 9090
+          protocol: "TCP"
+        volumeMounts: []
+      hostAliases: []
+      imagePullSecrets: []
+      initContainers: []
+      nodeSelector: {}
+      tolerations: []
+      volumes: []
