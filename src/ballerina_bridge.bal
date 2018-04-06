@@ -14,7 +14,7 @@ const int primary_service_port = 8080;
 
 // Service endpoint of the bridge service
 
-@kubernetes :Ingress{
+@kubernetes :Ingress {
     hostname:"ballerina.bridge.io",
     name:"ballerina-bridge-ingress",
     path:"/"
