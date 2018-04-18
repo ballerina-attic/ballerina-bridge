@@ -6,11 +6,11 @@ import ballerinax/kubernetes;
 import ballerina/os;
 
 // Constants for Env variables
-const string BRIDGE_HTTP_PORT_STR = "SIDECAR_HTTP_PORT";
-const string SERVICE_PORT_STR = "SERVICE_PORT";
+@final string BRIDGE_HTTP_PORT_STR = "SIDECAR_HTTP_PORT";
+@final string SERVICE_PORT_STR = "SERVICE_PORT";
 
-const int bridge_service_port = 9090;
-const int primary_service_port = 8080;
+@final int bridge_service_port = 9090;
+@final int primary_service_port = 8080;
 
 // Service endpoint of the bridge service
 
@@ -24,18 +24,34 @@ const int primary_service_port = 8080;
     serviceType:"NodePort",
     name:"ballerina-bridge-service"
 }
-endpoint http:ServiceEndpoint bridgeIngressServiceEP {
+endpoint http:Listener bridgeIngressServiceEP {
     port:9090
 };
 
 // Client endpoint that talks to primary service
-endpoint http:SimpleClientEndpoint primaryServiceClientEP {
+endpoint http:SimpleClient primaryServiceClientEP {
     url: "http://localhost:" + primary_service_port
 };
 
 @kubernetes:Deployment {
     image: "kasunindrasiri/ballerina-bridge",
     name: "ballerina-bridge"
+}
+
+//@kubernetes:ConfigMap{
+//    configMaps:[
+//               {name:"ballerina-config", mountPath:"/home/ballerina", isBallerinaConf:true,
+//                   data:["./bridge-config/ballerina.conf"]
+//               }
+//               ]
+//}
+
+@kubernetes:ConfigMap{
+    configMaps:[
+               {name:"ballerina-config", mountPath:"/home/ballerina", isBallerinaConf:true,
+                   data:["./bridge-config/ballerina.conf"]
+               }
+               ]
 }
 
 
@@ -48,13 +64,13 @@ service<http:Service> bridge bind bridgeIngressServiceEP {
     }
     ingressTraffic (endpoint sourceEndpoint, http:Request request) {
         log:printInfo("Ballerina bridge Ingress : " + request.rawPath);
-        var res = primaryServiceClientEP -> forward(request.rawPath, request);
+        var res = primaryServiceClientEP -> forward(untaint request.rawPath, request);
         match res {
             http:Response response => {
-                _ = sourceEndpoint -> forward(response);
+                _ = sourceEndpoint -> respond(response);
             }
             http:HttpConnectorError err => {
-                http:Response response = {};
+                http:Response response = new;
                 response.statusCode = 500;
                 response.setStringPayload(err.message);
                 _ = sourceEndpoint -> respond(response);
