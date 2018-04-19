@@ -26,17 +26,21 @@ import ballerina.os;
 const string SIDECAR_HTTP_PORT = "SIDECAR_HTTP_PORT";
 const string SERVICE_PORT = "SERVICE_PORT";
 
-const int scHttpPort = initPort(SIDECAR_HTTP_PORT);
+//const int scHttpPort = initPort(SIDECAR_HTTP_PORT);
 const int serviceHttpPort = initPort(SERVICE_PORT);
-
-// We haven't pass the above variables to service endpoint, as it is not working properly in the current build.
-
 
 @kubernetes:svc {
     name:"ballerina-sidecar-svc"
 }
+
+// Using port from an integer variable is not working in
 endpoint http:ServiceEndpoint sidecarIngressServiceEP {
-    port:9090
+    port:9090,
+    ssl:{
+            keyStoreFile:"${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            keyStorePassword:"ballerina",
+            certPassword:"ballerina"
+        }
 };
 
 endpoint http:ClientEndpoint primaryServiceClientEP {
@@ -46,10 +50,19 @@ endpoint http:ClientEndpoint primaryServiceClientEP {
 };
 
 @kubernetes:deployment {
-    image:"kasunindrasiri/ballerina-sidecar:1.0.0",
+    image: "kasunindrasiri/ballerina-sidecar",
     env:"SIDECAR_HTTP_PORT:9090, SERVICE_PORT:8080",
     name: "ballerina-sidecar"
 }
+
+@kubernetes:configMap{
+    configMaps:[
+               { name:"ballerina-config",mountPath:"/home/ballerina/conf",
+                    data:["./conf/ballerina.conf"]
+        }
+    ]
+}
+
 @kubernetes :ingress {
     hostname:"ballerina.sidecar.io",
     name:"ballerina-sidecar-ingress",
@@ -69,9 +82,10 @@ service<http:Service> sidecar bind sidecarIngressServiceEP {
         // Sidecar features such as Transactions, Security (JWT, Basic-Auth tokens, and Authorization) validation, Enabling observability,
         // are applied inside the Sidecar's routing logic.
 
-        log:printTrace("Ballerina Sidecar Ingress : " + request.rawPath);
+        log:printInfo("Ballerina Sidecar Ingress : " + request.rawPath);
         http:HttpConnectorError err;
         http:Response clientResponse = {};
+
 
         clientResponse, err = primaryServiceClientEP -> forward(request.rawPath, request);
 
@@ -84,7 +98,6 @@ service<http:Service> sidecar bind sidecarIngressServiceEP {
            _ = client -> forward(clientResponse);
        }
     }
-
 }
 
 function initPort (string envVarName) (int) {
