@@ -38,21 +38,7 @@ endpoint http:SimpleClient primaryServiceClientEP {
     name: "ballerina-bridge"
 }
 
-//@kubernetes:ConfigMap{
-//    configMaps:[
-//               {name:"ballerina-config", mountPath:"/home/ballerina", isBallerinaConf:true,
-//                   data:["./bridge-config/ballerina.conf"]
-//               }
-//               ]
-//}
 
-@kubernetes:ConfigMap{
-    configMaps:[
-               {name:"ballerina-config", mountPath:"/home/ballerina", isBallerinaConf:true,
-                   data:["./bridge-config/ballerina.conf"]
-               }
-               ]
-}
 
 
 @http:ServiceConfig {
