@@ -20,8 +20,7 @@ endpoint http:Client participantHotelService {
 @http:ServiceConfig {
     basePath:"/"
 }
-service<http:Service> InitiatorService bind initiatorEP {
-
+service<http:Service> TravelMgtInitiator bind initiatorEP {
 
     @http:ResourceConfig {
         path:"/travel"
@@ -50,19 +49,15 @@ service<http:Service> InitiatorService bind initiatorEP {
 
 
 //function onAbort(string transactionid) {
-//    state.abortedFunctionCalled = true;
 //}
 //
 //function onCommit(string transactionid) {
-//    state.committedFunctionCalled = true;
 //}
 //
 //function onLocalParticipantAbort(string transactionid) {
-//    state.localParticipantAbortedFunctionCalled = true;
 //}
 //
 //function onLocalParticipantCommit(string transactionid) {
-//    state.localParticipantCommittedFunctionCalled = true;
 //}
 
 

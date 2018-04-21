@@ -101,8 +101,6 @@ service<http:Service> BridgeSidecar bind bridgeIngressServiceEP {
         log:printInfo("Ballerina bridge Ingress : " + request.rawPath);
         var res = primaryServiceClientEP -> forward(untaint request.rawPath, request);
 
-        io:println("TX Header " + request.getHeader("x-b7a-xid"));
-
         match res {
             http:Response response => {
                 _ = sourceEndpoint -> respond(response);
