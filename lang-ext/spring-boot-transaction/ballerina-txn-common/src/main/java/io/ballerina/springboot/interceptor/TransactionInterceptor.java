@@ -52,13 +52,12 @@ import javax.servlet.http.HttpServletResponse;
 public class TransactionInterceptor extends HandlerInterceptorAdapter {
 
     private final static Logger logger = LoggerFactory.getLogger(TransactionInterceptor.class);
-    //private static final String DEFAULT_REGISTER_URL = "http://10.100.1.182:33333/register";
     private static final String TRANSACTION_REGISTER_URL = "transaction.register.url";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String txnID = request.getHeader("X-XID");
-        String registerAtUrl = request.getHeader("X-Register-At-URL");
+        String txnID = request.getHeader("x-b7a-xid");
+        String registerAtUrl = request.getHeader("x-b7a-register-at");
 
         if (txnID == null && registerAtUrl == null) {
             logger.warn("Request message does not contain transaction id or register url. service is not a " +

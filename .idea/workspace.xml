@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c0230209-d859-46ee-8497-a632a1459b60" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ballerina/sidecar/transactions_bridge.bal" beforeDir="false" afterPath="$PROJECT_DIR$/old_src/ballerina/sidecar/transactions_bridge.bal" afterDir="false" />
-    </list>
+    <list default="true" id="c0230209-d859-46ee-8497-a632a1459b60" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -23,24 +19,87 @@
   <component name="FileEditorManager">
     <leaf>
       <file leaf-file-name="ballerina_bridge_sidecar.bal" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/source/bridge/ballerina_bridge_sidecar.bal">
+        <entry file="file://$PROJECT_DIR$/src/bridge/ballerina_bridge_sidecar.bal">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="16" selection-start-line="16" selection-end-line="16" />
+            <state relative-caret-position="-2375">
+              <caret line="32" column="39" selection-start-line="32" selection-start-column="39" selection-end-line="32" selection-end-column="39" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ballerina_bridge.bal" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/ballerina_bridge.bal">
+      <file leaf-file-name="BookingService.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/hotel_service_springboot/src/main/java/ballerina/sidecar/samples/transactions/BookingService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="372">
-              <caret line="25" column="1" lean-forward="true" selection-end-line="65" selection-end-column="1" />
+            <state relative-caret-position="135">
+              <caret line="31" selection-start-line="31" selection-end-line="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HotelReservationRes.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/hotel_service_springboot/src/main/java/ballerina/sidecar/samples/transactions/HotelReservationRes.java">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file leaf-file-name="travel_initiator.bal" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/travel_mgt_service_ballerina/travel_initiator.bal">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-61">
+              <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="airline_service.bal" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/airline_service_ballerina/airline_service.bal">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="77">
+              <caret line="17" column="52" lean-forward="true" selection-start-line="17" selection-start-column="52" selection-end-line="17" selection-end-column="52" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="270">
+                <caret line="18" column="25" lean-forward="true" selection-start-line="18" selection-start-column="25" selection-end-line="18" selection-end-column="25" />
+              </first_editor>
+              <second_editor />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="req.json" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/travel_mgt_service_ballerina/req.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="4" column="13" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TransactionInterceptor.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lang-ext/spring-boot-transaction/ballerina-txn-common/src/main/java/io/ballerina/springboot/interceptor/TransactionInterceptor.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-281">
+              <caret line="54" selection-start-line="54" selection-end-line="54" />
+              <folding>
+                <element signature="e#0#6193#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Ballerina Service" />
+      </list>
+    </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -56,6 +115,15 @@
       <find>NOTIFY_RESULT_COMMITTED_STR</find>
       <find>http:SimpleClient</find>
       <find>S</find>
+      <find>mysql</find>
+      <find>maincarUrl</find>
+      <find>transaction {</find>
+      <find>Request message does not contain transaction id</find>
+      <find>ID</find>
+      <find>sidecarHost</find>
+      <find>33333</find>
+      <find>3333</find>
+      <find>transaction.register.urltransaction.register.url</find>
     </findStrings>
     <replaceStrings>
       <replace>txns</replace>
@@ -77,6 +145,14 @@
         <option value="$PROJECT_DIR$/source/bridge/ballerina_bridge.bal" />
         <option value="$PROJECT_DIR$/src/ballerina/sidecar/transactions_bridge.bal" />
         <option value="$PROJECT_DIR$/source/bridge/ballerina_bridge_sidecar.bal" />
+        <option value="$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/hotel_service_springboot/src/main/resources/application.properties" />
+        <option value="$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/airline_service_ballerina/ariline_service.bal" />
+        <option value="$PROJECT_DIR$/src/bridge/ballerina_bridge_sidecar.bal" />
+        <option value="$PROJECT_DIR$/lang-ext/spring-boot-transaction/ballerina-txn-common/src/main/java/io/ballerina/springboot/interceptor/TransactionInterceptor.java" />
+        <option value="$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/travel_mgt_service_ballerina/req.json" />
+        <option value="$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/travel_mgt_service_ballerina/travel_initiator.bal" />
+        <option value="$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/airline_service_ballerina/airline_service.bal" />
+        <option value="$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/README.md" />
       </list>
     </option>
   </component>
@@ -111,36 +187,170 @@
             <path>
               <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
               <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
-              <item name="old_src" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
               <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
-              <item name="old_src" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina-springboot-transactions" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina-springboot-transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="airline_service_ballerina" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina-springboot-transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="hotel_service_springboot" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina-springboot-transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="hotel_service_springboot" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina-springboot-transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="hotel_service_springboot" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina-springboot-transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="hotel_service_springboot" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina-springboot-transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="hotel_service_springboot" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="ballerina" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
               <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
-              <item name="old_src" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina-springboot-transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="hotel_service_springboot" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="ballerina" type="462c0819:PsiDirectoryNode" />
               <item name="sidecar" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
               <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
-              <item name="source" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina-springboot-transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="hotel_service_springboot" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina" type="462c0819:PsiDirectoryNode" />
+              <item name="sidecar" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
               <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
-              <item name="source" type="462c0819:PsiDirectoryNode" />
-              <item name="bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina-springboot-transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="hotel_service_springboot" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina" type="462c0819:PsiDirectoryNode" />
+              <item name="sidecar" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina-springboot-transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="hotel_service_springboot" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="resources" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina-springboot-transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="hotel_service_springboot" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="resources" type="462c0819:PsiDirectoryNode" />
+              <item name="META-INF" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina-springboot-transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="images" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
+              <item name="transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="ballerina-springboot-transactions" type="462c0819:PsiDirectoryNode" />
+              <item name="travel_mgt_service_ballerina" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
               <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ballerina-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ballerina-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="bridge" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -151,6 +361,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="Empty file" value="Ballerina Service" />
     <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file:///Users/kasun/Dev/Source/git/kasun04/ballerina-bridge/JUNK/foo/hello_service.bal" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -246,12 +457,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1524087456582</updated>
-      <workItem from="1524087457931" duration="16262000" />
+      <workItem from="1524087457931" duration="45769000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="80302000" />
+    <option name="totallyTimeSpent" value="109809000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="10" y="23" width="1670" height="1027" extended-state="0" />
@@ -268,11 +479,12 @@
       <window_info anchor="bottom" id="Database Changes" show_stripe_button="false" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Terminal" visible="true" weight="0.32903227" />
+      <window_info active="true" anchor="bottom" id="Terminal" visible="true" weight="0.32903227" />
       <window_info id="Capture Tool" />
       <window_info id="Designer" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16031942" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.08108108" />
       <window_info anchor="right" id="Database" />
+      <window_info anchor="bottom" id="Find" order="1" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" />
@@ -294,7 +506,6 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info id="Designer" order="2" />
       <window_info anchor="bottom" id="ANTLR Preview" order="7" />
-      <window_info anchor="bottom" id="Find" order="1" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
@@ -370,16 +581,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/hotel_service_springboot/src/main/java/ballerina/sidecar/samples/transactions/HotelReservationReq.java">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/hotel_service_springboot/src/main/java/ballerina/sidecar/samples/transactions/BookingService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="49" column="33" selection-start-line="49" selection-start-column="33" selection-end-line="49" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/source/ballerina.bridge/ballerina_bridge.bal">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
@@ -401,13 +602,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/old_src/ballerina/sidecar/transactions_bridge.bal">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1782">
-          <caret line="154" column="80" selection-start-line="154" selection-start-column="53" selection-end-line="154" selection-end-column="80" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/old_src/ballerina_bridge.bal">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -415,17 +609,139 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/bridge/ballerina_bridge_sidecar.bal">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" selection-start-line="16" selection-end-line="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/ballerina_bridge.bal">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="372">
           <caret line="25" column="1" lean-forward="true" selection-end-line="65" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/hotel_service_springboot/src/main/resources/schema.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="30" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/hotel_service_springboot/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="251">
+          <caret line="30" column="29" selection-start-line="30" selection-start-column="24" selection-end-line="30" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/hotel_service_springboot/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="60">
+            <caret line="4" column="3" selection-start-line="4" selection-start-column="3" selection-end-line="5" selection-end-column="77" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/images/transactions.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lang-ext/spring-boot-transaction/ballerina-txn-common/src/main/java/io/ballerina/springboot/interceptor/BallerinaInterceptorAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="322">
+          <caret line="28" column="15" selection-start-line="28" selection-start-column="15" selection-end-line="28" selection-end-column="15" />
+          <folding>
+            <element signature="e#0#1424#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/hotel_service_springboot/src/main/resources/application.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="12" selection-start-line="4" selection-start-column="12" selection-end-line="4" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/hotel_service_springboot/src/main/resources/META-INF/application-context.xml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/hotel_service_springboot/src/main/java/ballerina/sidecar/samples/transactions/HotelReservationReq.java">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/hotel_service_springboot/src/main/java/ballerina/sidecar/samples/transactions/HotelReservationRes.java">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/old_src/ballerina/sidecar/transactions_bridge.bal">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="25" column="25" selection-start-line="25" selection-start-column="25" selection-end-line="25" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/hotel_service_springboot/src/main/java/ballerina/sidecar/samples/transactions/BookingService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="31" selection-start-line="31" selection-end-line="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lang-ext/spring-boot-transaction/ballerina-txn-common/src/main/java/io/ballerina/springboot/interceptor/TransactionInterceptor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-281">
+          <caret line="54" selection-start-line="54" selection-end-line="54" />
+          <folding>
+            <element signature="e#0#6193#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/travel_mgt_service_ballerina/req.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/bridge/ballerina_bridge_sidecar.bal">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2375">
+          <caret line="32" column="39" selection-start-line="32" selection-start-column="39" selection-end-line="32" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/airline_service_ballerina/OLD_airline_svc.bal">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="301">
+          <caret line="44" lean-forward="true" selection-start-line="44" selection-end-line="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/travel_mgt_service_ballerina/travel_mgt_service.bal">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="880">
+          <caret line="91" lean-forward="true" selection-start-line="91" selection-end-line="91" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/travel_mgt_service_ballerina/travel_initiator.bal">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-61">
+          <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/airline_service_ballerina/airline_service.bal">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="77">
+          <caret line="17" column="52" lean-forward="true" selection-start-line="17" selection-start-column="52" selection-end-line="17" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/samples/transactions/ballerina-springboot-transactions/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="270">
+            <caret line="18" column="25" lean-forward="true" selection-start-line="18" selection-start-column="25" selection-end-line="18" selection-end-column="25" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>

@@ -32,9 +32,9 @@ import ballerina/util;
 @final int bridge_service_port = 9090;
 @final int primary_service_port = 8080;
 
-@final string sidecarHost = "10.100.1.182"; //TODO: get this from an env var/config API
-@final int sidecarPort = 33333; //TODO: get this from an env var/config API
-@final string maincarUrl = "http://10.100.5.131:8080/transaction"; //TODO: get this from an env var/config API
+@final string sidecarHost = "10.0.0.58"; //TODO: get this from an env var/config API
+@final int sidecarPort = 9090; //TODO: get this from an env var/config API
+@final string maincarUrl = "http://10.0.0.58:8080/transaction"; //TODO: get this from an env var/config API
 
 
 string mainCarUrl;
@@ -97,8 +97,10 @@ service<http:Service> BridgeSidecar bind bridgeIngressServiceEP {
         path:"/*"
     }
     ingressTraffic (endpoint sourceEndpoint, http:Request request) {
+
         log:printInfo("Ballerina bridge Ingress : " + request.rawPath);
         var res = primaryServiceClientEP -> forward(untaint request.rawPath, request);
+
         match res {
             http:Response response => {
                 _ = sourceEndpoint -> respond(response);
@@ -110,6 +112,7 @@ service<http:Service> BridgeSidecar bind bridgeIngressServiceEP {
                 _ = sourceEndpoint -> respond(response);
             }
         }
+
     }
 
 
