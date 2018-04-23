@@ -112,7 +112,6 @@ service<http:Service> BridgeSidecar bind bridgeIngressServiceEP {
                 _ = sourceEndpoint -> respond(response);
             }
         }
-
     }
 
 
