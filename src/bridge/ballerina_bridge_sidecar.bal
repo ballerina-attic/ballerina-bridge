@@ -14,7 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package bridge;
+
+// Packing support is broken in beta13. Will add this once it is fixed.
+//package bridge;
 
 import ballerina/http;
 import ballerina/io;
@@ -22,7 +24,7 @@ import ballerina/log;
 import ballerina/config;
 import ballerinax/kubernetes;
 import ballerina/transactions as txns;
-import ballerina/util;
+import ballerina/system;
 // import ballerina/os;
 
 // Constants for Env variables
@@ -39,7 +41,7 @@ import ballerina/util;
 
 string mainCarUrl;
 map<TwoPhaseCommitTransaction> participatedTransactions;
-string localParticipantId = util:uuid();
+string localParticipantId = system:uuid();
 
 type RegistrationRequest {
     string transactionId;
@@ -115,7 +117,7 @@ service<http:Service> BridgeSidecar bind bridgeIngressServiceEP {
     }
 
 
-    // *************** TXN *******************
+    // *************** Transactions Handling *******************
 
     @http:ResourceConfig {
         methods:["POST"],
@@ -147,8 +149,8 @@ service<http:Service> BridgeSidecar bind bridgeIngressServiceEP {
         }
         var connResult = conn -> respond(res);
         match connResult {
-            error err => log:printErrorCause("Sending response for register request for transaction " + txnId +
-                    " failed", err);
+            error err => log:printError("Sending response for register request for transaction " + txnId +
+                    " failed", err = err);
             () => log:printInfo("Registered remote participant: " + participantId + " for transaction: " +
                     txnId);
         }
@@ -181,7 +183,7 @@ service<http:Service> BridgeSidecar bind bridgeIngressServiceEP {
         }
         var connResult = conn -> respond(res);
         match connResult {
-            error err =>  log:printErrorCause("Sending response for prepare request failed", err);
+            error err =>  log:printError("Sending response for prepare request failed", err = err);
             () => {}
         }
     }
@@ -244,7 +246,7 @@ service<http:Service> BridgeSidecar bind bridgeIngressServiceEP {
             res.setJsonPayload(j);
             var connResult = conn -> respond(res);
             match connResult {
-                error err =>  log:printErrorCause("Sending response for notify request for transaction " + txnId + " failed", err);
+                error err =>  log:printError("Sending response for notify request for transaction " + txnId + " failed", err = err);
                 () => {}
             }
         }
@@ -258,7 +260,7 @@ function prepareMaincar(TwoPhaseCommitTransaction txn) returns string { // retur
     var result = maincarClient-> prepare(transactionId);
     match result {
         error err => {
-            log:printErrorCause("Maincar failed", err);
+            log:printError("Maincar failed", err = err);
             removeTransaction(transactionId);
             status = txns:PREPARE_RESULT_ABORTED_STR;
         }
@@ -298,7 +300,7 @@ function notifyMaincar (string transactionId, string message) returns string|err
     var result = maincarClient-> notify(transactionId, message);
     match result {
         error err => {
-            log:printErrorCause("Maincar replied with an error", err);
+            log:printError("Maincar replied with an error", err = err);
             return err;
         }
         string notificationStatus => {
