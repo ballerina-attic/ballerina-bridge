@@ -39,9 +39,19 @@ service<http:Service> TravelMgtInitiator bind initiatorEP {
         hotelReq.setJsonPayload(hotelReqJ);
 
         transaction {
-            airlineRes = check participantAirlineService -> post("/airline/reservation", request = req);
+
+            io:println("Started : Hotel Service Invocation");
             hotelRes = check participantHotelService -> post("/reservation/hotel", request = hotelReq);
-            io:println("Service calls are completed");
+            io:println("Complete : Hotel Service Invocation");
+
+
+            io:println("Started : Airline Service Invocation");
+            airlineRes = check participantAirlineService -> post("/airline/reservation", request = req);
+            io:println("Completed : Airline Service Invocation");
+
+
+
+            io:println("All service calls are completed.");
         }
         _ = caller -> respond(hotelRes);
     }
