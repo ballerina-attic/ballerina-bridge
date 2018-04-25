@@ -25,21 +25,15 @@ import ballerina/config;
 import ballerinax/kubernetes;
 import ballerina/transactions as txns;
 import ballerina/system;
-// import ballerina/os;
-
-// Constants for Env variables
-@final string BRIDGE_HTTP_PORT_STR = "SIDECAR_HTTP_PORT";
-@final string SERVICE_PORT_STR = "SERVICE_PORT";
-
-@final int bridge_service_port = 9090;
-@final int primary_service_port = 8080;
-
-@final string sidecarHost = "10.0.0.58"; //TODO: get this from an env var/config API
-@final int sidecarPort = 9090; //TODO: get this from an env var/config API
-@final string maincarUrl = "http://10.0.0.58:8080/transaction"; //TODO: get this from an env var/config API
 
 
-string mainCarUrl;
+@final string PRIMARY_SERVICE_HOST = config:getAsString("PRIMARY_SERVICE_HOST", default = "127.0.0.1");
+@final int PRIMARY_SERVICE_PORT = config:getAsInt("PRIMARY_SERVICE_PORT", default = 8080);
+@final string SIDECAR_HOST = config:getAsString("SIDECAR_HOST", default = "127.0.0.1");
+@final int SIDECAR_PORT = config:getAsInt("SIDECAR_HOST", default = 9090);
+
+@final string primaryServiceUrl = "http://" + PRIMARY_SERVICE_HOST + ":" + PRIMARY_SERVICE_PORT + "/transaction";
+
 map<TwoPhaseCommitTransaction> participatedTransactions;
 string localParticipantId = system:uuid();
 
@@ -75,12 +69,12 @@ endpoint http:Listener bridgeIngressServiceEP {
 
 // Client endpoint that talks to primary service
 endpoint http:Client primaryServiceClientEP {
-    url: "http://localhost:8080"
+    url: "http://localhost:" + PRIMARY_SERVICE_PORT
 };
 
 // Txns : Main car endpoint
 endpoint txns:Participant2pcClientEP maincarClient {
-    participantURL:maincarUrl,
+    participantURL:primaryServiceUrl,
     timeoutMillis:120000,
     retryConfig:{count:5, interval:5000}
 };
@@ -88,7 +82,8 @@ endpoint txns:Participant2pcClientEP maincarClient {
 
 @kubernetes:Deployment {
     image: "kasunindrasiri/ballerina-bridge",
-    name: "ballerina-bridge"
+    name: "ballerina-bridge",
+    env:{"PRIMARY_SERVICE_PORT":"8080"}
 }
 
 @http:ServiceConfig {
@@ -110,7 +105,7 @@ service<http:Service> BridgeSidecar bind bridgeIngressServiceEP {
             http:HttpConnectorError err => {
                 http:Response response = new;
                 response.statusCode = 500;
-                response.setStringPayload(err.message);
+                response.setPayload(err.message);
                 _ = sourceEndpoint -> respond(response);
             }
         }
@@ -132,14 +127,14 @@ service<http:Service> BridgeSidecar bind bridgeIngressServiceEP {
         //TODO: set the proper protocol
         string protocol = "durable";
         //  "http://" + coordinatorHost + ":" + coordinatorPort + participant2pcCoordinatorBasePath + "/" + transactionBlockId;
-        txns:RemoteProtocol[] protocols = [{name:protocol, url:"http://" + sidecarHost + ":" + sidecarPort + "/" + transactionBlockId}];
+        txns:RemoteProtocol[] protocols = [{name:protocol, url:"http://" + SIDECAR_HOST + ":" + SIDECAR_PORT + "/" + transactionBlockId}];
         var result = txns:registerParticipantWithRemoteInitiator(txnId, transactionBlockId,
             regReq.registerAtUrl, protocols);
         match result {
             txns:TransactionContext txnCtx => {
                 io:println(txnCtx);
                 res.statusCode = http:OK_200;
-                res.setStringPayload("Registration with coordinator successful");
+                res.setPayload("Registration with coordinator successful");
                 TwoPhaseCommitTransaction txn = {transactionId:txnId, state:txns:TXN_STATE_ACTIVE};
                 participatedTransactions[txnId] = txn;
             }

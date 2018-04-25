@@ -22,10 +22,10 @@ service<http:Service> AirlineService  bind participantAirlineService {
             if(reqJ.airline.toString() == "delta") {
                 io:println("Airline reservation done. -> Name - "
                         + reqJ.full_name.toString() + ", Airline - " + reqJ.airline.toString());
-                res.setStringPayload("Airline reserved!  " + reqJ.full_name.toString() );
+                res.setPayload("Airline reserved!  " + reqJ.full_name.toString() );
                 _ = caller -> respond(res);
             } else {
-                res.setStringPayload("Reservation Failed!");
+                res.setPayload("Reservation Failed!");
                 res.statusCode = http:INTERNAL_SERVER_ERROR_500;
                 _ = caller -> respond(res);
                 abort;
