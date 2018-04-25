@@ -6,7 +6,6 @@ endpoint http:Listener participantAirlineService {
     port:7070
 };
 
-
 @http:ServiceConfig {
     basePath:"/airline"
 }
