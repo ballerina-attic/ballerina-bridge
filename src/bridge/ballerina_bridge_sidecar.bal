@@ -81,7 +81,7 @@ endpoint txns:Participant2pcClientEP maincarClient {
 
 
 @kubernetes:Deployment {
-    image: "kasunindrasiri/ballerina-bridge",
+    image: "ballerina/bridge:0.970",
     name: "ballerina-bridge",
     env:{"PRIMARY_SERVICE_PORT":"8080"}
 }

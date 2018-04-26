@@ -20,8 +20,8 @@ endpoint http:Listener participantAirlineService {
 
 
 @kubernetes:Deployment {
-    image: "kasunindrasiri/bridge-sample-airline",
-    name: "bridge-sample-airline"
+    image: "ballerina/bridge-sample-airline-service:0.970",
+    name: "ballerina-bridge-sample-airline"
 }
 @http:ServiceConfig {
     basePath:"/airline"

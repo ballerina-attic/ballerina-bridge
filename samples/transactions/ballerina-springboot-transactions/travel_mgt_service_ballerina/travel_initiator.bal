@@ -36,8 +36,8 @@ endpoint http:Client participantHotelService {
 };
 
 @kubernetes:Deployment {
-    image: "kasunindrasiri/bridge-sample-travel-mgt",
-    name: "bridge-sample-travel-mgt",
+    image: "ballerina/bridge-sample-travel-mgt:0.970",
+    name: "ballerina-bridge-sample-travel-mgt",
     env:{"AIRLINE_HOST":"bridge-sample-airline-service", "AIRLINE_PORT":"7070", "HOTEL_HOST":"ballerina-bridge-service", "HOTEL_PORT":"9090"}
 }
 
