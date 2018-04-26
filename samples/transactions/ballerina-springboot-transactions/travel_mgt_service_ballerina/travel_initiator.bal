@@ -2,20 +2,48 @@
 
 import ballerina/http;
 import ballerina/io;
+import ballerina/config;
+import ballerinax/kubernetes;
 
+
+@final string AIRLINE_HOST = config:getAsString("AIRLINE_HOST", default = "127.0.0.1");
+@final int AIRLINE_PORT = config:getAsInt("AIRLINE_PORT", default = 7070);
+
+@final string HOTEL_HOST = config:getAsString("HOTEL_HOST", default = "127.0.0.1");
+@final int HOTEL_PORT = config:getAsInt("HOTEL_PORT", default = 9090);
+
+@kubernetes :Ingress {
+    hostname:"travelmgt.sample.bridge.io",
+    name:"bridge-sample-travel-mgt-ingress",
+    path:"/"
+}
+
+@kubernetes:Service {
+    serviceType:"NodePort",
+    name:"bridge-sample-travel-mgt-service"
+}
 endpoint http:Listener initiatorEP {
     port:6060
 };
 
 
 endpoint http:Client participantAirlineService {
-    url: "http://localhost:7070"
+    url: "http://" + AIRLINE_HOST + ":" + AIRLINE_PORT
 };
 
 endpoint http:Client participantHotelService {
-    url: "http://localhost:9090"
+    url: "http://" + HOTEL_HOST + ":" + HOTEL_PORT
 };
 
+@kubernetes:Deployment {
+    image: "ballerina/bridge-sample-travel-mgt:0.970",
+    name: "ballerina-bridge-sample-travel-mgt",
+    env:{"AIRLINE_HOST":"bridge-sample-airline-service", "AIRLINE_PORT":"7070", "HOTEL_HOST":"ballerina-bridge-service", "HOTEL_PORT":"9090"}
+}
+
+@kubernetes:ConfigMap {
+    ballerinaConf:"./conf/ballerina.conf"
+}
 
 @http:ServiceConfig {
     basePath:"/"
@@ -39,17 +67,21 @@ service<http:Service> TravelMgtInitiator bind initiatorEP {
         hotelReq.setJsonPayload(hotelReqJ);
 
         transaction {
-
             io:println("Started : Hotel Service Invocation");
             hotelRes = check participantHotelService -> post("/reservation/hotel", request = hotelReq);
+            if (hotelRes.statusCode != 200) {
+                io:println(">> Error invoking Hotel Service.");
+                //abort;
+            }
             io:println("Complete : Hotel Service Invocation");
-
 
             io:println("Started : Airline Service Invocation");
             airlineRes = check participantAirlineService -> post("/airline/reservation", request = req);
+            if (airlineRes.statusCode != 200) {
+                io:println(">> Error invoking Airline Service.");
+                //abort;
+            }
             io:println("Completed : Airline Service Invocation");
-
-
 
             io:println("All service calls are completed.");
         }
