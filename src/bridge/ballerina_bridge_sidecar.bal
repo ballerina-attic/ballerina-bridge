@@ -102,7 +102,7 @@ service<http:Service> BridgeSidecar bind bridgeIngressServiceEP {
             http:Response response => {
                 _ = sourceEndpoint -> respond(response);
             }
-            http:HttpConnectorError err => {
+            error err => {
                 http:Response response = new;
                 response.statusCode = 500;
                 response.setPayload(err.message);

@@ -1,11 +1,28 @@
 import ballerina/io;
 import ballerina/log;
 import ballerina/http;
+import ballerina/config;
+import ballerinax/kubernetes;
 
+@kubernetes :Ingress {
+    hostname:"airline.sample.bridge.io",
+    name:"bridge-sample-airline-ingress",
+    path:"/"
+}
+
+@kubernetes:Service {
+    serviceType:"NodePort",
+    name:"bridge-sample-airline-service"
+}
 endpoint http:Listener participantAirlineService {
     port:7070
 };
 
+
+@kubernetes:Deployment {
+    image: "kasunindrasiri/bridge-sample-airline",
+    name: "bridge-sample-airline"
+}
 @http:ServiceConfig {
     basePath:"/airline"
 }
