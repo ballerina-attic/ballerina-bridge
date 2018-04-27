@@ -6,6 +6,6 @@ distributed transactions, security, observability etc. The bridge and the servic
  ## Key Features 
  
  - Ballerina Micro-Transactions. 
- - Security (TLS, JWT Token validation, Basic Authentication and Authorization)
+ - Security (TLS with JWT Token validation)
  - Observability (Logging, Tracing and Metrics).
 
