@@ -14,32 +14,28 @@
 // specific language governing permissions and limitations
 // under the License.
 
-//package ballerina.sidecar;
 
+// Packing support is broken in beta13. Will add this once it is fixed.
+//package bridge;
+
+import ballerina/http;
 import ballerina/io;
 import ballerina/log;
-import ballerina/http;
+import ballerina/config;
+import ballerinax/kubernetes;
 import ballerina/transactions as txns;
-import ballerina/util;
+import ballerina/system;
 
-@final string sidecarHost = "10.100.1.182"; //TODO: get this from an env var/config API
-@final int sidecarPort = 33333; //TODO: get this from an env var/config API
-@final string maincarUrl = "http://10.100.5.131:8080/transaction"; //TODO: get this from an env var/config API
 
-endpoint http:Listener sidecarListener {
-    host:sidecarHost,
-    port:sidecarPort
-};
+@final string PRIMARY_SERVICE_HOST = config:getAsString("PRIMARY_SERVICE_HOST", default = "127.0.0.1");
+@final int PRIMARY_SERVICE_PORT = config:getAsInt("PRIMARY_SERVICE_PORT", default = 8080);
+@final string SIDECAR_HOST = config:getAsString("SIDECAR_HOST", default = "127.0.0.1");
+@final int SIDECAR_PORT = config:getAsInt("SIDECAR_PORT", default = 9090);
 
-endpoint txns:Participant2pcClientEP maincarClient {
-    participantURL:maincarUrl,
-    timeoutMillis:120000,
-    retryConfig:{count:5, interval:5000}
-};
+@final string primaryServiceUrl = "http://" + PRIMARY_SERVICE_HOST + ":" + PRIMARY_SERVICE_PORT + "/transaction";
 
-string mainCarUrl;
 map<TwoPhaseCommitTransaction> participatedTransactions;
-string localParticipantId = util:uuid();
+string localParticipantId = system:uuid();
 
 type RegistrationRequest {
     string transactionId;
@@ -53,8 +49,85 @@ type TwoPhaseCommitTransaction {
     txns:TransactionState state;
 };
 
-@http:ServiceConfig {basePath:"/"}
-service TransactionSidecar bind sidecarListener {
+
+@kubernetes :Ingress {
+    hostname:"ballerina.bridge.io",
+    name:"ballerina-bridge-ingress",
+    path:"/"
+}
+
+@kubernetes:Service {
+    serviceType:"NodePort",
+    name:"ballerina-bridge-service"
+}
+// **** Listener Endpoints ****
+endpoint http:Listener listener {
+    port:9090
+};
+
+endpoint http:SecureListener secureListener {
+    port:9443,
+    //authProviders:[jwtAuthProvider],
+    secureSocket: {
+        keyStore: {
+            path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            password: "ballerina"
+        }
+    }
+};
+
+// **** Client Endpoints ****
+
+// Client endpoint that talks to primary service
+endpoint http:Client primaryServiceClientEP {
+    url: "http://localhost:" + PRIMARY_SERVICE_PORT
+};
+
+// Txns : Main car endpoint
+endpoint txns:Participant2pcClientEP maincarClient {
+    participantURL:primaryServiceUrl,
+    timeoutMillis:120000,
+    retryConfig:{count:5, interval:5000}
+};
+
+
+@kubernetes:Deployment {
+    image: "ballerina/bridge:0.970",
+    name: "ballerina-bridge",
+    env:{"PRIMARY_SERVICE_HOST":"127.0.0.1", "PRIMARY_SERVICE_PORT":"8080", "SIDECAR_HOST":"127.0.0.1", "SIDECAR_PORT":"9090"}
+}
+
+@kubernetes:ConfigMap {
+    ballerinaConf:"./ballerina.conf"
+}
+
+@http:ServiceConfig {
+    basePath:"/"
+}
+service<http:Service> BridgeSidecar bind listener, secureListener {
+    @http:ResourceConfig {
+        path:"/*"
+    }
+    ingressTraffic (endpoint sourceEndpoint, http:Request request) {
+
+        log:printInfo("Ballerina bridge Ingress : " + request.rawPath);
+        var res = primaryServiceClientEP -> forward(untaint request.rawPath, request);
+
+        match res {
+            http:Response response => {
+                _ = sourceEndpoint -> respond(response);
+            }
+            error err => {
+                http:Response response = new;
+                response.statusCode = 500;
+                response.setPayload(err.message);
+                _ = sourceEndpoint -> respond(response);
+            }
+        }
+    }
+
+
+    // *************** Transactions Handling *******************
 
     @http:ResourceConfig {
         methods:["POST"],
@@ -69,14 +142,14 @@ service TransactionSidecar bind sidecarListener {
         //TODO: set the proper protocol
         string protocol = "durable";
         //  "http://" + coordinatorHost + ":" + coordinatorPort + participant2pcCoordinatorBasePath + "/" + transactionBlockId;
-        txns:RemoteProtocol[] protocols = [{name:protocol, url:"http://" + sidecarHost + ":" + sidecarPort + "/" + transactionBlockId}];
+        txns:RemoteProtocol[] protocols = [{name:protocol, url:"http://" + SIDECAR_HOST + ":" + SIDECAR_PORT + "/" + transactionBlockId}];
         var result = txns:registerParticipantWithRemoteInitiator(txnId, transactionBlockId,
-                                                                  regReq.registerAtUrl, protocols);
+            regReq.registerAtUrl, protocols);
         match result {
             txns:TransactionContext txnCtx => {
                 io:println(txnCtx);
                 res.statusCode = http:OK_200;
-                res.setStringPayload("Registration with coordinator successful");
+                res.setPayload("Registration with coordinator successful");
                 TwoPhaseCommitTransaction txn = {transactionId:txnId, state:txns:TXN_STATE_ACTIVE};
                 participatedTransactions[txnId] = txn;
             }
@@ -86,12 +159,13 @@ service TransactionSidecar bind sidecarListener {
         }
         var connResult = conn -> respond(res);
         match connResult {
-            error err => log:printErrorCause("Sending response for register request for transaction " + txnId +
-                    " failed", err);
+            error err => log:printError("Sending response for register request for transaction " + txnId +
+                    " failed", err = err);
             () => log:printInfo("Registered remote participant: " + participantId + " for transaction: " +
                     txnId);
         }
     }
+
 
     @http:ResourceConfig {
         methods:["POST"],
@@ -119,10 +193,11 @@ service TransactionSidecar bind sidecarListener {
         }
         var connResult = conn -> respond(res);
         match connResult {
-            error err =>  log:printErrorCause("Sending response for prepare request failed", err);
+            error err =>  log:printError("Sending response for prepare request failed", err = err);
             () => {}
         }
     }
+
 
     @http:ResourceConfig {
         methods:["POST"],
@@ -181,12 +256,13 @@ service TransactionSidecar bind sidecarListener {
             res.setJsonPayload(j);
             var connResult = conn -> respond(res);
             match connResult {
-                error err =>  log:printErrorCause("Sending response for notify request for transaction " + txnId + " failed", err);
+                error err =>  log:printError("Sending response for notify request for transaction " + txnId + " failed", err = err);
                 () => {}
             }
         }
     }
 }
+
 
 function prepareMaincar(TwoPhaseCommitTransaction txn) returns string { // return status
     string status;
@@ -194,7 +270,7 @@ function prepareMaincar(TwoPhaseCommitTransaction txn) returns string { // retur
     var result = maincarClient-> prepare(transactionId);
     match result {
         error err => {
-            log:printErrorCause("Maincar failed", err);
+            log:printError("Maincar failed", err = err);
             removeTransaction(transactionId);
             status = txns:PREPARE_RESULT_ABORTED_STR;
         }
@@ -234,7 +310,7 @@ function notifyMaincar (string transactionId, string message) returns string|err
     var result = maincarClient-> notify(transactionId, message);
     match result {
         error err => {
-            log:printErrorCause("Maincar replied with an error", err);
+            log:printError("Maincar replied with an error", err = err);
             return err;
         }
         string notificationStatus => {
