@@ -2,25 +2,15 @@
 
 ## Use Case 
 
-This sample demonstrate a how a simple Spring Boot service can be deployed with Ballerina Bridge. 
+This sample demonstrate a how a simple Spring Boot service can be made observable with the use of Ballerina Bridge, 
+so that you don't want to add any code level changes to your service.   
 
 ![Ballerina Sidecar with SpringBoot](images/observability.png "Ballerina Sidecar with SpringBoot")
 
 
 ### Building the Spring Boot HelloWorld service 
 
-- You find the docker image of the HelloWorld Spring Boot service in `` ballerina/bridge-sample-spring-helloworld``. 
-
-``` 
-    docker pull ballerina/bridge-sample-spring-helloworld
-```
-
-- Or you can build locally with maven. The Spring Boot Hello service is located at `` ballerina-bridge/samples/getting-started/springboot-helloworld/service`` directory.  
-
-- You can locally build the executable and the docker image for the Spring Boot HelloWorld service using the following mvn command.  
-
-    `` $ mvn clean install -Ddocker.image.prefix=<your-docker-image-prefix> dockerfile:build ``
-
+- You can use the same service from 'getting-started' sample and follow the same steps to deploy. 
 ## Running on Kubernetes  
 
 - You can integrate Ballerina Bridge with your non-Ballerina service by pulling the Ballerina Bridge image and deploying it alongside your non-Ballerina service in the same Kubernetes pod. 
@@ -41,6 +31,10 @@ This sample demonstrate a how a simple Spring Boot service can be deployed with 
          
          ... 
 ```
+- **Observability** : To enable observability you need to modify the `` ballerina_bridge_sidecar_config_map.yaml``
+with the required connection parameter to the observability tool that you are using. 
+So, for instance if you use Jaeger for tracing, you need to update config by enabling Jaeger tracing to true, specify Jaeger host and port to publish the tracing data. 
+
 - Now you can deploy the Kubernetes artifacts with `` kubectl create -f ./samples/getting-started/kubernetes``. 
 
 - Verify Kubernetes deployment, service and ingress is running. 
@@ -60,3 +54,7 @@ $ curl http://ballerina.bridge.io/hello
  Hello World, from Spring Boot and Ballerina Sidecar!
 ```
 
+- After sending couple of request you should be able to get the metric or tracing data for your Spring Boot service through the Ballerina Bridge.   
+
+
+![Jaeger Tracing](images/jaeger_ui.png "Ballerina Bridge with Jaeger")
