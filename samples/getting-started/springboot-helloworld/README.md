@@ -50,20 +50,18 @@ This sample demonstrate a how a simple Spring Boot service can be deployed with 
 
 - Verify Kubernetes deployment, service and ingress is running. 
 
-- Access the sidecar service via Node port or Ingress. 
+- Access the service via the bridge sidecar using the ingress. 
 
-Ingress: 
 To access the service via Ingress interface, you should modify the following entry. 
 Add /etc/host entry to match hostname. 
-
 ```
-127.0.0.1 helloworld.com
+127.0.0.1 ballerina.bridge.io
 
 ``` 
-Access the service
+Access the service: 
 
 ```
-$ curl http://helloworld.com/hello
+$ curl http://ballerina.bridge.io/hello
  Hello World, from Spring Boot and Ballerina Sidecar!
 ```
 
