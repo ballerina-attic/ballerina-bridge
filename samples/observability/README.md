@@ -1,10 +1,10 @@
-# Running Spring Boot HelloWorld service with Ballerina Sidecar 
+# Observability with Ballerina Bridge 
 
 ## Use Case 
 
 This sample demonstrate a how a simple Spring Boot service can be deployed with Ballerina Bridge. 
 
-![Ballerina Sidecar with SpringBoot](images/getting_started.png "Ballerina Sidecar with SpringBoot")
+![Ballerina Sidecar with SpringBoot](images/observability.png "Ballerina Sidecar with SpringBoot")
 
 
 ### Building the Spring Boot HelloWorld service 
@@ -28,14 +28,13 @@ This sample demonstrate a how a simple Spring Boot service can be deployed with 
 - Copy ``src/kubernetes`` artifacts to `` samples/getting-started `` and inject your Spring Boot service deployment information to the deployment descriptor. 
 - For this sample scenario, you can do this by changing the `` kubernetes/ballerina_bridge_sidecar_deployment.yaml `` as shown below:  
 
-```
-        ... 
+```yaml
         
        spec:
          containers:
          - name: bridge-sample-spring-helloworld
            image: ballerina/bridge-sample-spring-helloworld
-           imagePullPolicy: IfNotPresent 
+           imagePullPolicy: Always 
            ports:
            - containerPort: 8080
          - args: [] 
