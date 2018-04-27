@@ -14,7 +14,6 @@ This sample demonstrate a how a simple Spring Boot service can be deployed with 
 ``` 
     docker pull ballerina/bridge-sample-spring-helloworld
 ```
-
 - Or you can build locally with maven. The Spring Boot Hello service is located at `` ballerina-bridge/samples/getting-started/springboot-helloworld/service`` directory.  
 
 - You can locally build the executable and the docker image for the Spring Boot HelloWorld service using the following mvn command.  
