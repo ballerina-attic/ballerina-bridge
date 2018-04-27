@@ -73,7 +73,6 @@ To access the service via Ingress interface, you should modify the following ent
 Add /etc/host entry to match hostname. 
 ```
 127.0.0.1 ballerina.bridge.io
-
 ``` 
 Access the service: 
 
