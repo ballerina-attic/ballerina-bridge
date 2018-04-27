@@ -4,7 +4,7 @@
 
 This sample demonstrate a how a simple Spring Boot service can be deployed with Ballerina Bridge. 
 
-![Ballerina Sidecar with SpringBoot](images/getting_started.png "Ballerina Sidecar with SpringBoot")
+![Ballerina Bridge with SpringBoot](images/getting_started.png "Ballerina Bridge with SpringBoot")
 
 
 ### Building the Spring Boot HelloWorld service 
@@ -14,7 +14,6 @@ This sample demonstrate a how a simple Spring Boot service can be deployed with 
 ``` 
     docker pull ballerina/bridge-sample-spring-helloworld
 ```
-
 - Or you can build locally with maven. The Spring Boot Hello service is located at `` ballerina-bridge/samples/getting-started/springboot-helloworld/service`` directory.  
 
 - You can locally build the executable and the docker image for the Spring Boot HelloWorld service using the following mvn command.  
@@ -28,27 +27,45 @@ This sample demonstrate a how a simple Spring Boot service can be deployed with 
 - Copy ``src/kubernetes`` artifacts to `` samples/getting-started `` and inject your Spring Boot service deployment information to the deployment descriptor. 
 - For this sample scenario, you can do this by changing the `` kubernetes/ballerina_bridge_sidecar_deployment.yaml `` as shown below:  
 
-```
-        ... 
-        
-       spec:
-         containers:
-         - name: bridge-sample-spring-helloworld
-           image: ballerina/bridge-sample-spring-helloworld
-           imagePullPolicy: IfNotPresent 
-           ports:
-           - containerPort: 8080
-         - args: [] 
+```yaml
+    spec:
+      containers:
+      - name: bridge-sample-spring-helloworld
+        image: ballerina/bridge-sample-spring-helloworld
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+      - args: []
+        command: []
+        env:
+        - name: "PRIMARY_SERVICE_PORT"
+          value: "8080"
+        - name: "CONFIG_FILE"
+          value: "/home/ballerina/conf/ballerina.conf"
+        - name: "SIDECAR_PORT"
+          value: "9090"
+        - name: "PRIMARY_SERVICE_HOST"
+          value: "127.0.0.1"
+        - name: "SIDECAR_HOST"
+          value: "127.0.0.1"
+        envFrom: []
+        image: "ballerina/bridge:0.970"
+        imagePullPolicy: "IfNotPresent"
+        name: "ballerina-bridge"
+        ports:
+        - containerPort: 9090
+          protocol: "TCP"
+        volumeMounts:
+        - mountPath: "/home/ballerina/conf/"
+          name: "bridgesidecar-ballerina-conf-config-map-volume"
+          readOnly: false
+      hostAliases: []
          
          ... 
 ```
-- Now you can deploy the Kubernetes artifacts with `` kubectl create -f ./samples/getting-started/kubernetes``. If the deployment is successful, you should see:
+- Now you can deploy the Kubernetes artifacts with `` kubectl create -f ./samples/getting-started/kubernetes``.
 
-```
-
-```
-
-- Verify Kubernetes deployment, service and ingress is running. 
+- Verify that the Kubernetes deployment, service and ingress is running. 
 
 - Access the service via the bridge sidecar using the ingress. 
 
@@ -56,12 +73,12 @@ To access the service via Ingress interface, you should modify the following ent
 Add /etc/host entry to match hostname. 
 ```
 127.0.0.1 ballerina.bridge.io
-
 ``` 
-Access the service: 
+Invoking the service: 
 
 ```
 $ curl http://ballerina.bridge.io/hello
  Hello World, from Spring Boot and Ballerina Sidecar!
 ```
+
 
