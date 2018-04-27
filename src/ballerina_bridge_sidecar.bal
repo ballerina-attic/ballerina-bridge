@@ -15,9 +15,6 @@
 // under the License.
 
 
-// Packing support is broken in beta13. Will add this once it is fixed.
-//package bridge;
-
 import ballerina/http;
 import ballerina/io;
 import ballerina/log;
@@ -49,30 +46,52 @@ type TwoPhaseCommitTransaction {
     txns:TransactionState state;
 };
 
+http:AuthProvider jwtAuthProvider = {
+    scheme:"jwt",
+    propagateToken: true,
+    issuer:"ballerina",
+    audience: "ballerina.io",
+    clockSkew:10,
+    certificateAlias: "ballerina",
+    trustStore: {
+        path: "${ballerina.home}/bre/security/ballerinaTruststore.p12",
+        password: "ballerina"
+    }
+};
 
+
+// **** Listener Endpoint : HTTP ****
 @kubernetes :Ingress {
     hostname:"ballerina.bridge.io",
-    name:"ballerina-bridge-ingress",
-    path:"/"
+    name:"ballerina-bridge-ingress"
 }
 
 @kubernetes:Service {
     serviceType:"NodePort",
     name:"ballerina-bridge-service"
 }
-// **** Listener Endpoints ****
 endpoint http:Listener listener {
     port:9090
 };
 
+
+// **** Listener Endpoint : HTTPS with JWT ****
+@kubernetes:Service {
+    serviceType:"NodePort",
+    name:"ballerina-bridge-secured-service"
+}
+@kubernetes:Ingress {
+        hostname:"secured.ballerina.bridge.io",
+        name:"ballerina-bridge-secured-ingress"
+}
 endpoint http:SecureListener secureListener {
-    port:9443,
-    //authProviders:[jwtAuthProvider],
+    port:9091,
+    authProviders:[jwtAuthProvider],
     secureSocket: {
-        keyStore: {
-            path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
-            password: "ballerina"
-        }
+            keyStore: {
+                path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
+                password: "ballerina"
+            }
     }
 };
 
