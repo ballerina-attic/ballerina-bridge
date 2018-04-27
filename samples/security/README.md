@@ -81,3 +81,83 @@ $ curl http://ballerina.bridge.io/hello
  Hello World, from Spring Boot and Ballerina Sidecar!
 ```
 
+
+
+- **Securing the service** : 
+- By default, Ballerina Bridge creates two ingress in `` ballerina_bridge_sidecar_ingress.yaml`` definitions for non-secured (HTTP) and secured (TLS with JWT Authentication) access.  
+
+```yaml
+
+---
+apiVersion: "extensions/v1beta1"
+kind: "Ingress"
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    kubernetes.io/ingress.class: "nginx"
+  finalizers: []
+  labels:
+    app: "ballerina_bridge_sidecar"
+  name: "ballerina-bridge-secured-ingress"
+  ownerReferences: []
+spec:
+  rules:
+  - host: "secured.ballerina.bridge.io"
+    http:
+      paths:
+      - backend:
+          serviceName: "ballerina-bridge-secured-service"
+          servicePort: 9091
+        path: "/"
+  tls:
+  - hosts:
+    - "secured.ballerina.bridge.io"
+---
+apiVersion: "extensions/v1beta1"
+kind: "Ingress"
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-passthrough: "false"
+    kubernetes.io/ingress.class: "nginx"
+  finalizers: []
+  labels:
+    app: "ballerina_bridge_sidecar"
+  name: "ballerina-bridge-ingress"
+  ownerReferences: []
+spec:
+  rules:
+  - host: "ballerina.bridge.io"
+    http:
+      paths:
+      - backend:
+          serviceName: "ballerina-bridge-service"
+          servicePort: 9090
+        path: "/"
+  tls:
+  - hosts: []
+```
+
+- You may delete the non-secured ingress and expose the service only via the secured interface 
+- Now you can deploy the Kubernetes artifacts with `` kubectl create -f ./samples/getting-started/kubernetes``.
+
+- Verify that the Kubernetes deployment, service and ingress is running. 
+
+- Access the service via the Ballerina Bridge using the ingress. 
+
+To access the service via Ingress interface, you should modify the following entry. 
+Add /etc/host entry to match hostname. 
+```
+127.0.0.1 ballerina.bridge.io
+``` 
+Invoking the service: 
+
+```
+
+$ curl -k https://secured.ballerina.bridge.io/hello
+request failed: Authentication failure
+
+$ curl -k -v -H "Authorization:Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYWxsZXJpbmEiLCJpc3MiOiJiYWxsZXJpbmEiLCJleHAiOjI4MTg0MTUwMTksImlhdCI6MTUyNDU3NTAxOSwianRpIjoiZjVhZGVkNTA1ODVjNDZmMmI4Y2EyMzNkMGMyYTNjOWQiLCJhdWQiOlsiYmFsbGVyaW5hIiwiYmFsbGVyaW5hLm9yZyIsImJhbGxlcmluYS5pbyJdfQ.X2mHWCr8A5UaJFvjSPUammACnTzFsTdre-P5yWQgrwLBmfcpr9JaUuq4sEwp6to3xSKN7u9QKqRLuWH1SlcphDQn6kdF1ZrCgXRQ0HQTilZQU1hllZ4c7yMNtMgMIaPgEBrStLX1Ufr6LpDkTA4VeaPCSqstHt9WbRzIoPQ1fCxjvHBP17ShiGPRza9p_Z4t897s40aQMKbKLqLQ8rEaYAcsoRBXYyUhb_PRS-YZtIdo7iVmkMVFjYjHvmYbpYhNo57Z1Y5dNa8h8-4ON4CXzcJ1RzuyuFVz1a3YL3gWTsiliVmno7vKyRo8utirDRIPi0dPJPuWi2uMtJkqdkpzJQ" https://secured.ballerina.bridge.io/hello
+ Hello World, from Spring Boot and Ballerina Sidecar!
+```
+
+

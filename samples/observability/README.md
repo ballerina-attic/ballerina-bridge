@@ -70,7 +70,7 @@ Add /etc/host entry to match hostname.
 ```
 127.0.0.1 ballerina.bridge.io
 ``` 
-Access the service: 
+Invoking the service: 
 
 ```
 $ curl http://ballerina.bridge.io/hello
