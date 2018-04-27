@@ -19,19 +19,43 @@ so that you don't want to add any code level changes to your service.
 - For this sample scenario, you can do this by changing the `` kubernetes/ballerina_bridge_sidecar_deployment.yaml `` as shown below:  
 
 ```yaml
-        
-       spec:
-         containers:
-         - name: bridge-sample-spring-helloworld
-           image: ballerina/bridge-sample-spring-helloworld
-           imagePullPolicy: Always 
-           ports:
-           - containerPort: 8080
-         - args: [] 
+    spec:
+      containers:
+      - name: bridge-sample-spring-helloworld
+        image: ballerina/bridge-sample-spring-helloworld
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+      - args: []
+        command: []
+        env:
+        - name: "PRIMARY_SERVICE_PORT"
+          value: "8080"
+        - name: "CONFIG_FILE"
+          value: "/home/ballerina/conf/ballerina.conf"
+        - name: "SIDECAR_PORT"
+          value: "9090"
+        - name: "PRIMARY_SERVICE_HOST"
+          value: "127.0.0.1"
+        - name: "SIDECAR_HOST"
+          value: "127.0.0.1"
+        envFrom: []
+        image: "ballerina/bridge:0.970"
+        imagePullPolicy: "IfNotPresent"
+        name: "ballerina-bridge"
+        ports:
+        - containerPort: 9090
+          protocol: "TCP"
+        volumeMounts:
+        - mountPath: "/home/ballerina/conf/"
+          name: "bridgesidecar-ballerina-conf-config-map-volume"
+          readOnly: false
+      hostAliases: []
          
          ... 
 ```
-- **Observability** : To enable observability you need to modify the `` ballerina_bridge_sidecar_config_map.yaml``
+
+- **Observability** : To enable observability for your Spring Boot service via Ballerina Bridge, you need to modify the `` ballerina_bridge_sidecar_config_map.yaml``
 with the required connection parameter to the observability tool that you are using. 
 So, for instance if you use Jaeger for tracing, you need to update config by enabling Jaeger tracing to true, specify Jaeger host and port to publish the tracing data. 
 
