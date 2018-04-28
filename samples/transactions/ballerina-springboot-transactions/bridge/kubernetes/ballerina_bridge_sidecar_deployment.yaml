@@ -1,0 +1,72 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "ballerina_bridge_sidecar"
+  name: "ballerina-bridge"
+  ownerReferences: []
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations: {}
+      finalizers: []
+      labels:
+        app: "ballerina_bridge_sidecar"
+      ownerReferences: []
+    spec:
+      containers:
+      - name: bridge-sample-hotel
+        image: ballerina/ballerina_sidecar_springboot_transactions:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: TX_REG_URL
+          value: http://localhost:9090/register
+        ports:
+        - containerPort: 8080
+      - args: []
+        command: []
+        env:
+        - name: "PRIMARY_SERVICE_PORT"
+          value: "8080"
+        - name: "CONFIG_FILE"
+          value: "/home/ballerina/conf/ballerina.conf"
+        - name: "SIDECAR_PORT"
+          value: "9090"
+        - name: "PRIMARY_SERVICE_HOST"
+          value: "127.0.0.1"
+        - name: "SIDECAR_HOST"
+          value: "ballerina-bridge-service"
+        envFrom: []
+        image: "ballerina/bridge:0.970"
+        imagePullPolicy: "IfNotPresent"
+        name: "ballerina-bridge"
+        ports:
+        - containerPort: 9090
+          protocol: "TCP"
+        - containerPort: 9091
+          protocol: "TCP"
+        volumeMounts:
+        - mountPath: "/ballerina/runtime/bre/security"
+          name: "securelistener-keystore-volume"
+          readOnly: true
+        - mountPath: "/home/ballerina/conf/"
+          name: "bridgesidecar-ballerina-conf-config-map-volume"
+          readOnly: false
+      hostAliases: []
+      imagePullSecrets: []
+      initContainers: []
+      nodeSelector: {}
+      tolerations: []
+      volumes:
+      - name: "securelistener-keystore-volume"
+        secret:
+          items: []
+          secretName: "securelistener-keystore"
+      - configMap:
+          items: []
+          name: "bridgesidecar-ballerina-conf-config-map"
+        name: "bridgesidecar-ballerina-conf-config-map-volume"

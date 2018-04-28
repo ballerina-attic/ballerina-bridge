@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bridge-sample-hotel-service
+  labels:
+    app: bridge-sample-hotel
+spec:
+  ports:
+    - port: 8080
+  selector:
+    app: bridge-sample-hotel

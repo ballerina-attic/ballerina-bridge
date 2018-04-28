@@ -1,0 +1,23 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Ingress"
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-passthrough: "false"
+    kubernetes.io/ingress.class: "nginx"
+  finalizers: []
+  labels:
+    app: "airline_service"
+  name: "bridge-sample-airline-ingress"
+  ownerReferences: []
+spec:
+  rules:
+  - host: "airline.sample.bridge.io"
+    http:
+      paths:
+      - backend:
+          serviceName: "bridge-sample-airline-service"
+          servicePort: 7070
+        path: "/"
+  tls:
+  - hosts: []

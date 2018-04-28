@@ -1,0 +1,47 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Ingress"
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    kubernetes.io/ingress.class: "nginx"
+  finalizers: []
+  labels:
+    app: "ballerina_bridge_sidecar"
+  name: "ballerina-bridge-secured-ingress"
+  ownerReferences: []
+spec:
+  rules:
+  - host: "secured.ballerina.bridge.io"
+    http:
+      paths:
+      - backend:
+          serviceName: "ballerina-bridge-secured-service"
+          servicePort: 9091
+        path: "/"
+  tls:
+  - hosts:
+    - "secured.ballerina.bridge.io"
+---
+apiVersion: "extensions/v1beta1"
+kind: "Ingress"
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-passthrough: "false"
+    kubernetes.io/ingress.class: "nginx"
+  finalizers: []
+  labels:
+    app: "ballerina_bridge_sidecar"
+  name: "ballerina-bridge-ingress"
+  ownerReferences: []
+spec:
+  rules:
+  - host: "ballerina.bridge.io"
+    http:
+      paths:
+      - backend:
+          serviceName: "ballerina-bridge-service"
+          servicePort: 9090
+        path: "/"
+  tls:
+  - hosts: []

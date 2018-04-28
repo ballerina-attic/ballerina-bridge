@@ -1,0 +1,20 @@
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "travel_initiator"
+  name: "bridge-sample-travel-mgt-service"
+  ownerReferences: []
+spec:
+  externalIPs: []
+  loadBalancerSourceRanges: []
+  ports:
+  - port: 6060
+    protocol: "TCP"
+    targetPort: 6060
+  selector:
+    app: "travel_initiator"
+  type: "NodePort"
