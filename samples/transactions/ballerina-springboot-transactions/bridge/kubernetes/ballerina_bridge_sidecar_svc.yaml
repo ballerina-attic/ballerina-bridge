@@ -1,0 +1,40 @@
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "ballerina_bridge_sidecar"
+  name: "ballerina-bridge-service"
+  ownerReferences: []
+spec:
+  externalIPs: []
+  loadBalancerSourceRanges: []
+  ports:
+  - port: 9090
+    protocol: "TCP"
+    targetPort: 9090
+  selector:
+    app: "ballerina_bridge_sidecar"
+  type: "NodePort"
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "ballerina_bridge_sidecar"
+  name: "ballerina-bridge-secured-service"
+  ownerReferences: []
+spec:
+  externalIPs: []
+  loadBalancerSourceRanges: []
+  ports:
+  - port: 9091
+    protocol: "TCP"
+    targetPort: 9091
+  selector:
+    app: "ballerina_bridge_sidecar"
+  type: "NodePort"

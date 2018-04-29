@@ -4,6 +4,8 @@ import ballerina/http;
 import ballerina/io;
 import ballerina/config;
 import ballerinax/kubernetes;
+import ballerina/log;
+
 
 
 @final string AIRLINE_HOST = config:getAsString("AIRLINE_HOST", default = "127.0.0.1");
@@ -58,6 +60,7 @@ service<http:Service> TravelMgtInitiator bind initiatorEP {
         http:Response airlineRes = new;
         http:Response hotelRes = new;
         http:Request hotelReq = new;
+        http:Response finalResponse = new;
 
         json reqJ = check req.getJsonPayload();
         string name = reqJ.full_name.toString();
@@ -65,13 +68,20 @@ service<http:Service> TravelMgtInitiator bind initiatorEP {
         string checkOut = reqJ.end_date.toString();
         json hotelReqJ = { fullName: name, checkIn: checkIn, checkOut: checkOut, rooms: 1 };
         hotelReq.setJsonPayload(hotelReqJ);
+        string reservationStatus;
+
+        io:println(" Hotel " + HOTEL_HOST + " - port " + HOTEL_PORT);
 
         transaction {
             io:println("Started : Hotel Service Invocation");
             hotelRes = check participantHotelService -> post("/reservation/hotel", request = hotelReq);
             if (hotelRes.statusCode != 200) {
                 io:println(">> Error invoking Hotel Service.");
-                //abort;
+                reservationStatus = reservationStatus + " : Hotel Reservation Failed";
+                json failureMsg = {status:reservationStatus};
+                finalResponse.setJsonPayload(failureMsg);
+                _ = caller -> respond(finalResponse);
+                abort;
             }
             io:println("Complete : Hotel Service Invocation");
 
@@ -79,27 +89,31 @@ service<http:Service> TravelMgtInitiator bind initiatorEP {
             airlineRes = check participantAirlineService -> post("/airline/reservation", request = req);
             if (airlineRes.statusCode != 200) {
                 io:println(">> Error invoking Airline Service.");
-                //abort;
+                reservationStatus = reservationStatus + " : Airline Reservation Failed.";
+                json failureMsg = {status:reservationStatus};
+
+                finalResponse.setJsonPayload(failureMsg);
+                _ = caller -> respond(finalResponse);
+                abort;
             }
             io:println("Completed : Airline Service Invocation");
 
             io:println("All service calls are completed.");
+            if (hotelRes.statusCode == 200 && airlineRes.statusCode == 200) {
+                json successMsg = {status:"Airline and Hotel reservations successful!"};
+                finalResponse.setJsonPayload(successMsg);
+                _ = caller -> respond(finalResponse);
+            }
         }
-        _ = caller -> respond(hotelRes);
     }
 }
 
 
-//function onAbort(string transactionid) {
-//}
-//
-//function onCommit(string transactionid) {
-//}
-//
-//function onLocalParticipantAbort(string transactionid) {
-//}
-//
-//function onLocalParticipantCommit(string transactionid) {
-//}
+function onAbort(string transactionid) {
+    log:printInfo("--- onAbort --- TXID " + transactionid);
+}
+function onCommit(string transactionid) {
+    log:printInfo("--- onCommit --- TXID " + transactionid);
+}
 
 

@@ -145,7 +145,6 @@ service<http:Service> BridgeSidecar bind listener, secureListener {
         }
     }
 
-
     // *************** Transactions Handling *******************
 
     @http:ResourceConfig {
@@ -160,7 +159,6 @@ service<http:Service> BridgeSidecar bind listener, secureListener {
 
         //TODO: set the proper protocol
         string protocol = "durable";
-        //  "http://" + coordinatorHost + ":" + coordinatorPort + participant2pcCoordinatorBasePath + "/" + transactionBlockId;
         txns:RemoteProtocol[] protocols = [{name:protocol, url:"http://" + SIDECAR_HOST + ":" + SIDECAR_PORT + "/" + transactionBlockId}];
         var result = txns:registerParticipantWithRemoteInitiator(txnId, transactionBlockId,
             regReq.registerAtUrl, protocols);
@@ -193,7 +191,6 @@ service<http:Service> BridgeSidecar bind listener, secureListener {
     }
     prepare(endpoint conn, http:Request req, int transactionBlockId, txns:PrepareRequest prepareReq) {
         http:Response res = new; res.statusCode = http:INTERNAL_SERVER_ERROR_500;
-
         string txnId = prepareReq.transactionId;
         log:printInfo("Prepare received for transaction: " + txnId);
 
@@ -324,7 +321,7 @@ function removeTransaction(string transactionId) {
     }
 }
 
-function notifyMaincar (string transactionId, string message) returns string|error { //(string status, error err)
+function notifyMaincar (string transactionId, string message) returns string|error {
     log:printInfo("Notify(" + message + ") maincar");
     var result = maincarClient-> notify(transactionId, message);
     match result {

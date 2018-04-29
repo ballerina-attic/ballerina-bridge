@@ -52,7 +52,7 @@ import javax.servlet.http.HttpServletResponse;
 public class TransactionInterceptor extends HandlerInterceptorAdapter {
 
     private final static Logger logger = LoggerFactory.getLogger(TransactionInterceptor.class);
-    private static final String TRANSACTION_REGISTER_URL = "transaction.register.url";
+    private static final String TRANSACTION_REGISTER_URL = "TX_REG_URL";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -83,13 +83,13 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
                 HttpComponentsClientHttpRequestFactory(HttpClients.createDefault());
         RestTemplate restTemplate = new RestTemplate(requestFactory);
 
-        String registerUrl = System.getProperty(TRANSACTION_REGISTER_URL);
+        String registerUrl = System.getenv(TRANSACTION_REGISTER_URL);
         if (logger.isDebugEnabled()) {
             logger.debug("Transaction Register Url : " + registerUrl);
         }
         if (registerUrl == null) {
             String msg = "Transaction Register URL is not registered as system property. " +
-                    "Please set register url in system property: transaction.register.url";
+                    "Please set register url in system property: TX_REG_URL";
             response.getWriter().write(msg);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             logger.error(msg);
@@ -104,7 +104,7 @@ public class TransactionInterceptor extends HandlerInterceptorAdapter {
             return false;
         }
         ResponseEntity<String> responseEntity = restTemplate.exchange(System
-                .getProperty(TRANSACTION_REGISTER_URL), HttpMethod.POST, entity, String.class);
+                .getenv(TRANSACTION_REGISTER_URL), HttpMethod.POST, entity, String.class);
 
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
             if (logger.isDebugEnabled()) {

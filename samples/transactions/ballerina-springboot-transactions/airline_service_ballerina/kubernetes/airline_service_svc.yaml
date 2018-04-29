@@ -1,0 +1,20 @@
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "airline_service"
+  name: "bridge-sample-airline-service"
+  ownerReferences: []
+spec:
+  externalIPs: []
+  loadBalancerSourceRanges: []
+  ports:
+  - port: 7070
+    protocol: "TCP"
+    targetPort: 7070
+  selector:
+    app: "airline_service"
+  type: "NodePort"

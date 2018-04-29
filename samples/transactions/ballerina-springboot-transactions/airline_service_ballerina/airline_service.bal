@@ -52,9 +52,9 @@ service<http:Service> AirlineService  bind participantAirlineService {
 
 
 function onAbort(string transactionid) {
-    log:printInfo("--- onAbort ---");
+    log:printInfo("--- onAbort --- TXID " + transactionid);
 }
 
 function onCommit(string transactionid) {
-    log:printInfo("--- onCommit ---");
+    log:printInfo("--- onCommit --- TXID " + transactionid);
 }

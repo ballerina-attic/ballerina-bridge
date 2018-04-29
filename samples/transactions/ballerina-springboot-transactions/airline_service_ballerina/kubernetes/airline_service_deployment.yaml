@@ -1,0 +1,38 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "airline_service"
+  name: "ballerina-bridge-sample-airline"
+  ownerReferences: []
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations: {}
+      finalizers: []
+      labels:
+        app: "airline_service"
+      ownerReferences: []
+    spec:
+      containers:
+      - args: []
+        command: []
+        env: []
+        envFrom: []
+        image: "ballerina/bridge-sample-airline-service:0.970"
+        imagePullPolicy: "IfNotPresent"
+        name: "ballerina-bridge-sample-airline"
+        ports:
+        - containerPort: 7070
+          protocol: "TCP"
+        volumeMounts: []
+      hostAliases: []
+      imagePullSecrets: []
+      initContainers: []
+      nodeSelector: {}
+      tolerations: []
+      volumes: []

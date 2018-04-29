@@ -1,0 +1,55 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "travel_initiator"
+  name: "ballerina-bridge-sample-travel-mgt"
+  ownerReferences: []
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations: {}
+      finalizers: []
+      labels:
+        app: "travel_initiator"
+      ownerReferences: []
+    spec:
+      containers:
+      - args: []
+        command: []
+        env:
+        - name: "HOTEL_HOST"
+          value: "ballerina-bridge-service"
+        - name: "AIRLINE_PORT"
+          value: "7070"
+        - name: "CONFIG_FILE"
+          value: "/home/ballerina/conf/ballerina.conf"
+        - name: "AIRLINE_HOST"
+          value: "bridge-sample-airline-service"
+        - name: "HOTEL_PORT"
+          value: "9090"
+        envFrom: []
+        image: "ballerina/bridge-sample-travel-mgt:0.970"
+        imagePullPolicy: "IfNotPresent"
+        name: "ballerina-bridge-sample-travel-mgt"
+        ports:
+        - containerPort: 6060
+          protocol: "TCP"
+        volumeMounts:
+        - mountPath: "/home/ballerina/conf/"
+          name: "travelmgtinitiator-ballerina-conf-config-map-volume"
+          readOnly: false
+      hostAliases: []
+      imagePullSecrets: []
+      initContainers: []
+      nodeSelector: {}
+      tolerations: []
+      volumes:
+      - configMap:
+          items: []
+          name: "travelmgtinitiator-ballerina-conf-config-map"
+        name: "travelmgtinitiator-ballerina-conf-config-map-volume"
