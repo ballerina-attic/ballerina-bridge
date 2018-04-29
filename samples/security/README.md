@@ -147,7 +147,7 @@ spec:
 To access the service via Ingress interface, you should modify the following entry. 
 Add /etc/host entry to match hostname. 
 ```
-127.0.0.1 ballerina.bridge.io
+127.0.0.1 secured.ballerina.bridge.io
 ``` 
 Invoking the service: 
 
