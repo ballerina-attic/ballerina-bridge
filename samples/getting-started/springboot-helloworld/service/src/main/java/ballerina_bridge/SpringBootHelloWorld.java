@@ -1,4 +1,4 @@
-package ballerina_sidecar;
+package ballerina_bridge;
 
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
@@ -12,7 +12,7 @@ public class SpringBootHelloWorld {
     @RequestMapping("/hello")
     @ResponseBody
     String hello() {
-        return "Hello World, from Spring Boot and Ballerina Sidecar!";
+        return "Hello World, from Spring Boot and Ballerina Bridge!";
     }
 
     public static void main(String[] args) throws Exception {
