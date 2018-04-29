@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: bridge-sample-hotel
-        image: ballerina/ballerina_sidecar_springboot_transactions:latest
+        image: ballerina/bridge-sample-spring-hotel-service:latest
         imagePullPolicy: IfNotPresent
         env:
         - name: TX_REG_URL
