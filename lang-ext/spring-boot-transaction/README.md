@@ -20,12 +20,12 @@ and service interceptor.
       <dependency>
           <groupId>io.ballerina.springboot</groupId>
           <artifactId>ballerina-txn-common</artifactId>
-          <version>1.0.0-SNAPSHOT</version>
+          <version>0.970-SNAPSHOT</version>
       </dependency>
       <dependency>
           <groupId>io.ballerina.springboot</groupId>
           <artifactId>ballerina-txn-jdbc</artifactId>
-          <version>1.0.0-SNAPSHOT</version>
+          <version>0.970-SNAPSHOT</version>
       </dependency>
         ...
     </dependencies>
