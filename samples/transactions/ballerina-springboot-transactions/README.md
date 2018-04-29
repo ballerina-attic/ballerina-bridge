@@ -35,7 +35,7 @@ transaction {
 ```
 
 The hotel service does not understand the transactions initiator by Ballerina. Hence it has to be invoked via the Ballerina Bridge, which will take care of the transaction handling capabilities of the hotel service. Here it acts as a participant of the distributed transaction. 
-To propagate transactions all the way down to the database level you need to include the Ballerina Spring extensions in the your Spring Boot service . You can refer this for more details.
+To propagate transactions all the way down to the database level you need to include the Ballerina Spring extensions in the your Spring Boot service . You can refer [Ballerina Spring Boot Transaction Extension](../../../lang-ext/spring-boot-transaction/README.md) for more details.
 When it comes to the deployment, we'll deploy the Ballerina Bridge and Hotel service in the same pod or VM.  
   That's all you have to do to make your Spring Boot service a part of the distributed transaction. 
 
@@ -83,6 +83,14 @@ This is a Ballerina service which you can deploy using the deployment scripts in
 
 `` $$kubectl apply -f kubernetes``
 
+- In addition to that please include the following host entries in ``/etc/hosts``. 
+
+``` 
+127.0.0.1   ballerina.bridge.io
+127.0.0.1   travelmgt.sample.bridge.io
+127.0.0.1   airline.sample.bridge.io
+127.0.0.1   hotel.sample.bridge.io
+```
  ### Testing 
 Successful Scenario 
 ``` 
