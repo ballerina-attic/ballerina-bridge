@@ -8,7 +8,7 @@ In Ballerina, we support managing transactions across multiple micro services
 plugged in to Ballerina eco-system, we developed custom transaction manager 
 and service interceptor.
  
- ## How to add Ballerina Spring Boot Transaction Extension to your service  
+ ## How to add Ballerina Spring Boot transaction extension to your service  
  
  Following steps need to be done to enable micro transaction support for 
  Spring Boot service in Ballerina eco-system.
