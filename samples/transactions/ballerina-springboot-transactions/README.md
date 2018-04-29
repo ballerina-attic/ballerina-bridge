@@ -65,11 +65,15 @@ It's recommended to deploy hotel Spring Boot service and Ballerina Bridge in the
 Since the hotel service uses mysql database, you need to deploy the mysql service using ``/ballerina-bridge/samples/transactions/ballerina-springboot-transactions/hotel_service_springboot/db_setup/kubernetes`` artifacts. 
 Navigate to that directory and execute: 
 
-`` $$kubectl apply -f kubernetes `` 
+```
+    $kubectl apply -f kubernetes
+```
 
 Then you can deploy the Hotel Spring Boot service alongside the Ballerina Bridge sidecar using Kubernetes artifacts in ``ballerina-bridge/samples/transactions/ballerina-springboot-transactions/bridge``. 
 
-`` $$kubectl apply -f kubernetes``
+```
+    $kubectl apply -f kubernetes
+```
 Here we are deploying a single pod with two containers; Spring Boot service and Ballerina Bridge. Please refer `` ballerina_bridge_sidecar_deployment.yaml`` more details on the deployment. 
 
 
