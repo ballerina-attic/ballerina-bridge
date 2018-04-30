@@ -6,7 +6,7 @@ metadata:
   finalizers: []
   labels:
     app: "travel_initiator"
-  name: "bridge-sample-travel-mgt"
+  name: "ballerina-bridge-sample-travel-mgt"
   ownerReferences: []
 spec:
   replicas: 1
