@@ -34,8 +34,7 @@ and service interceptor.
  Spring Boot service implementation needs to mark as transactional. This can 
  be either declarative transactional or programmatic transactional.
  
- * Register callback service(`io.ballerina.springboot
- .TransactionCallbackService`) along with other services.
+ * Register callback service(`io.ballerina.springboot.TransactionCallbackService`) along with other services.
  
  for example, If your service is `BookingService`, register both 
  `BookingService` and `TransactionCallbackService` in Spring application like
@@ -47,6 +46,6 @@ and service interceptor.
       }  
   ```
 Note: With current implementation, user needs to register callback 
-service manually. We are working on automatically register when registering 
+service manually. We are working on automatically register it when registering 
 other services.
  
