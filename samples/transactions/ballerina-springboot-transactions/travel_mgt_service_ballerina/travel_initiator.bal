@@ -81,7 +81,7 @@ service<http:Service> TravelMgtInitiator bind initiatorEP {
                 json failureMsg = {status:reservationStatus};
                 finalResponse.setJsonPayload(failureMsg);
                 _ = caller -> respond(finalResponse);
-                abort;
+                //abort;
             }
             io:println("Complete : Hotel Service Invocation");
 
@@ -94,7 +94,7 @@ service<http:Service> TravelMgtInitiator bind initiatorEP {
 
                 finalResponse.setJsonPayload(failureMsg);
                 _ = caller -> respond(finalResponse);
-                abort;
+                //abort;
             }
             io:println("Completed : Airline Service Invocation");
 
