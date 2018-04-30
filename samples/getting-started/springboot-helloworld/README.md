@@ -78,7 +78,7 @@ Invoking the service:
 
 ```
 $ curl http://ballerina.bridge.io/hello
- Hello World, from Spring Boot and Ballerina Sidecar!
+ Hello World, from Spring Boot and Ballerina Bridge!
 ```
 
 

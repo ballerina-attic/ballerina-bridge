@@ -6,7 +6,7 @@ metadata:
   finalizers: []
   labels:
     app: "airline_service"
-  name: "ballerina-bridge-sample-airline"
+  name: "bridge-sample-airline"
   ownerReferences: []
 spec:
   replicas: 1
@@ -25,7 +25,7 @@ spec:
         envFrom: []
         image: "ballerina/bridge-sample-airline-service:0.970"
         imagePullPolicy: "IfNotPresent"
-        name: "ballerina-bridge-sample-airline"
+        name: "bridge-sample-airline"
         ports:
         - containerPort: 7070
           protocol: "TCP"

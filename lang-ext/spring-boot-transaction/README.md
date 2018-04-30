@@ -8,10 +8,11 @@ In Ballerina, we support managing transactions across multiple micro services
 plugged in to Ballerina eco-system, we developed custom transaction manager 
 and service interceptor.
  
- ## What needs to be done
+ ## How to add Ballerina Spring Boot transaction extension to your service  
  
  Following steps need to be done to enable micro transaction support for 
  Spring Boot service in Ballerina eco-system.
+ * Build the [Spring Boot transaction extension](https://github.com/ballerina-platform/ballerina-bridge/tree/master/lang-ext/spring-boot-transaction) locally using `mvn clean install`.  
  
  * Add below dependencies to the service `pom.xml` file.
  
@@ -20,12 +21,12 @@ and service interceptor.
       <dependency>
           <groupId>io.ballerina.springboot</groupId>
           <artifactId>ballerina-txn-common</artifactId>
-          <version>1.0.0-SNAPSHOT</version>
+          <version>0.970-SNAPSHOT</version>
       </dependency>
       <dependency>
           <groupId>io.ballerina.springboot</groupId>
           <artifactId>ballerina-txn-jdbc</artifactId>
-          <version>1.0.0-SNAPSHOT</version>
+          <version>0.970-SNAPSHOT</version>
       </dependency>
         ...
     </dependencies>
@@ -45,7 +46,7 @@ and service interceptor.
           SpringApplication.run(new Class[]{BookingService.class, TransactionCallbackService.class}, args);
       }  
   ```
-Note: With current implementation, user needs to register register callback 
+Note: With current implementation, user needs to register callback 
 service manually. We are working on automatically register when registering 
 other services.
  

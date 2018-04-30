@@ -28,8 +28,8 @@ spec:
         app: bridge-sample-hotel
     spec:
       containers:
-      - image: ballerina/ballerina_sidecar_springboot_transactions:latest
-          name: bridge-sample-hotel
+      - image: ballerina/bridge-sample-spring-hotel-service:latest
+        name: bridge-sample-hotel
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
